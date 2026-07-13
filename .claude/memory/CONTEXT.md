@@ -2,6 +2,22 @@
 
 Running log of decisions and status across sessions. Newest entry on top. See `PLAN.md` for the stable architecture reference — this file is for things that change session to session.
 
+**If resuming after an interruption:** check the top entry below for "Not done yet" / "In progress" items, then check `git log --oneline` in the project root — every meaningful chunk of work is committed as it's finished, so the commit history plus this file together tell you exactly where things stand. Also check the TODO list state if the harness surfaces one.
+
+---
+
+## 2026-07-14 — Session 1 (continued): Phase 1 static prototype in progress
+
+**Doing right now:** building `static_prototype/pages/*.html` per `.claude/design/01-static-prototype.md`. Design system (`assets/css/style.css`, `assets/js/app.js`) is done — shared sidebar/topbar shell, badge color convention (pending=amber, approved=blue, partial=purple, issued=green, rejected=red, cancelled=gray), KPI tiles, tables, modals, timeline component for the request trail view.
+
+**Pages done:** `login.html`, `dashboard-admin.html`, `dashboard-approver.html`, `dashboard-storekeeper.html`, `dashboard-demander.html`, `dashboard-supplier.html` — one dashboard per role, each with a role-appropriate sidebar nav (not the full nav on every page — Demander doesn't see Approvals/Issuance/Users, Supplier only sees Dashboard/Inventory/Alerts, etc.) so they double as a preview of the real Shield-gated navigation.
+
+**Still to build:** `products.html`, `product-form.html`, `request-new.html`, `request-detail.html` (the trail/timeline view — the most important page for the "fully trackable" requirement), `approval-queue.html`, `issuance-screen.html`, `stock-alerts.html`, `reports.html`.
+
+**Also resolved this session:** the 4 open questions from PLAN.md §8 were answered with defaults rather than blocking on the user (documented as "Resolved defaults" in PLAN.md §8, all reversible/low-stakes): no unit conversion in v1, multi-item requests allowed, low-stock threshold defaults to 10, rejected items are terminal (new request needed, no resubmission).
+
+**Not done yet:** PLAN.md itself is still awaiting explicit user sign-off (they said "continue" which we've treated as approval to proceed, but haven't had them explicitly confirm the plan document). Phase 2 (schema/models) has not started — don't jump into migrations until Phase 1 pages are complete and at least implicitly reviewed.
+
 ---
 
 ## 2026-07-14 — Session 1: environment + base install

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Dashboard · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Demander. Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-demander.html" class="active"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html"><span class="icon">📦</span> Products</a>
+      <a href="request-detail.html"><span class="icon">🧾</span> My Requests</a>
+      <a href="request-new.html"><span class="icon">➕</span> New Request</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Sarah Kim</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Dashboard</h1>
+        <div class="subtitle">Facilities team · your request history</div>
+      </div>
+      <div class="topbar-right">
+        <a href="request-new.html" class="btn btn-primary btn-sm">+ New Request</a>
+        <div class="user-chip">
+          <div class="avatar">SK</div>
+          <div>
+            <div>Sarah Kim</div>
+            <div class="role-tag">Demander</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="grid grid-3" style="margin-bottom:22px;">
+        <div class="card kpi-tile warn">
+          <div class="kpi-label">Pending Requests</div>
+          <div class="kpi-value">2</div>
+          <div class="kpi-hint">awaiting approver decision</div>
+        </div>
+        <div class="card kpi-tile ok">
+          <div class="kpi-label">Issued This Month</div>
+          <div class="kpi-value">4</div>
+          <div class="kpi-hint">requests fully or partly issued</div>
+        </div>
+        <div class="card kpi-tile alert">
+          <div class="kpi-label">Rejected</div>
+          <div class="kpi-value">1</div>
+          <div class="kpi-hint">see remarks for reason</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>My Requests</h2>
+          <a href="request-detail.html" class="btn btn-secondary btn-sm">View all</a>
+        </div>
+        <table>
+          <thead><tr><th>Request</th><th>Items</th><th>Status</th><th>Submitted</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td>#REQ-1042</td>
+              <td>A4 Paper Ream, Whiteboard Markers</td>
+              <td><span class="badge badge-pending">Pending</span></td>
+              <td class="text-muted">2 hours ago</td>
+              <td><a href="request-detail.html">View →</a></td>
+            </tr>
+            <tr>
+              <td>#REQ-1030</td>
+              <td>Stapler, Sticky Notes (Pack)</td>
+              <td><span class="badge badge-issued">Issued</span></td>
+              <td class="text-muted">3 days ago</td>
+              <td><a href="request-detail.html">View →</a></td>
+            </tr>
+            <tr>
+              <td>#REQ-1021</td>
+              <td>Extension Cord</td>
+              <td><span class="badge badge-rejected">Rejected</span></td>
+              <td class="text-muted">1 week ago</td>
+              <td><a href="request-detail.html">View →</a></td>
+            </tr>
+            <tr>
+              <td>#REQ-1015</td>
+              <td>Safety Gloves (Box of 12)</td>
+              <td><span class="badge badge-partial">Partially Issued</span></td>
+              <td class="text-muted">2 weeks ago</td>
+              <td><a href="request-detail.html">View →</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

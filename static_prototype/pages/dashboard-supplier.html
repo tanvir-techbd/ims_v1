@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Supplier Dashboard · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Supplier (read-only). Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-supplier.html" class="active"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html"><span class="icon">📦</span> Inventory</a>
+      <a href="stock-alerts.html"><span class="icon">⚠</span> Stock Alerts</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Global Supplies Ltd.</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Inventory Overview</h1>
+        <div class="subtitle">Read-only view — no edit or issuance actions</div>
+      </div>
+      <div class="topbar-right">
+        <div class="user-chip">
+          <div class="avatar">GS</div>
+          <div>
+            <div>Global Supplies Ltd.</div>
+            <div class="role-tag">Supplier</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="grid grid-3" style="margin-bottom:22px;">
+        <div class="card kpi-tile">
+          <div class="kpi-label">Total Products</div>
+          <div class="kpi-value">248</div>
+          <div class="kpi-hint">across 12 categories</div>
+        </div>
+        <div class="card kpi-tile alert">
+          <div class="kpi-label">Low Stock Items</div>
+          <div class="kpi-value">7</div>
+          <div class="kpi-hint">may need replenishment</div>
+        </div>
+        <div class="card kpi-tile">
+          <div class="kpi-label">Last Updated</div>
+          <div class="kpi-value" style="font-size:16px; margin-top:10px;">Just now</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Current Stock Levels</h2>
+          <div class="search-box">
+            <span class="icon">🔍</span>
+            <input type="text" placeholder="Search products…" />
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Product</th><th>Category</th><th>Unit</th><th class="text-right">Stock on Hand</th></tr></thead>
+          <tbody>
+            <tr><td>Safety Gloves (Box of 12)</td><td>PPE</td><td>Box</td><td class="text-right"><span class="stock-bar"><span class="stock-bar-fill low" style="width:8%"></span></span>3</td></tr>
+            <tr><td>A4 Paper Ream</td><td>Stationery</td><td>Ream</td><td class="text-right"><span class="stock-bar"><span class="stock-bar-fill low" style="width:15%"></span></span>6</td></tr>
+            <tr><td>Hand Sanitizer 500ml</td><td>Hygiene</td><td>Bottle</td><td class="text-right"><span class="stock-bar"><span class="stock-bar-fill warn" style="width:22%"></span></span>9</td></tr>
+            <tr><td>Printer Toner (Black)</td><td>IT Supplies</td><td>Piece</td><td class="text-right"><span class="stock-bar"><span class="stock-bar-fill warn" style="width:25%"></span></span>10</td></tr>
+            <tr><td>Whiteboard Markers</td><td>Stationery</td><td>Piece</td><td class="text-right"><span class="stock-bar"><span class="stock-bar-fill warn" style="width:25%"></span></span>10</td></tr>
+            <tr><td>Stapler</td><td>Stationery</td><td>Piece</td><td class="text-right"><span class="stock-bar"><span class="stock-bar-fill" style="width:80%"></span></span>42</td></tr>
+            <tr><td>Extension Cord (5m)</td><td>Electrical</td><td>Piece</td><td class="text-right"><span class="stock-bar"><span class="stock-bar-fill" style="width:60%"></span></span>28</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

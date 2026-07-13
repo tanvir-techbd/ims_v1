@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Approver Dashboard · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Approver. Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-approver.html" class="active"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html"><span class="icon">📦</span> Products</a>
+      <a href="request-detail.html"><span class="icon">🧾</span> Stock Requests</a>
+      <a href="approval-queue.html"><span class="icon">✅</span> Approvals</a>
+      <a href="stock-alerts.html"><span class="icon">⚠</span> Stock Alerts</a>
+      <a href="reports.html"><span class="icon">📊</span> Reports</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Jane Whitfield</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Dashboard</h1>
+        <div class="subtitle">Your approval queue at a glance</div>
+      </div>
+      <div class="topbar-right">
+        <div class="user-chip">
+          <div class="avatar">JW</div>
+          <div>
+            <div>Jane Whitfield</div>
+            <div class="role-tag">Approver</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="grid grid-3" style="margin-bottom:22px;">
+        <div class="card kpi-tile warn">
+          <div class="kpi-label">Awaiting Your Approval</div>
+          <div class="kpi-value">9</div>
+          <div class="kpi-hint">items across 6 requests</div>
+        </div>
+        <div class="card kpi-tile ok">
+          <div class="kpi-label">Approved This Week</div>
+          <div class="kpi-value">27</div>
+          <div class="kpi-hint">items, 118 units total</div>
+        </div>
+        <div class="card kpi-tile alert">
+          <div class="kpi-label">Rejected This Week</div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-hint">see remarks in request detail</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Pending Your Decision</h2>
+          <a href="approval-queue.html" class="btn btn-primary btn-sm">Open approval queue</a>
+        </div>
+        <table>
+          <thead><tr><th>Request</th><th>Requester</th><th>Product</th><th class="text-right">Requested</th><th>Submitted</th></tr></thead>
+          <tbody>
+            <tr><td>#REQ-1042</td><td>Sarah Kim, Facilities</td><td>A4 Paper Ream</td><td class="text-right">20</td><td class="text-muted">2 hours ago</td></tr>
+            <tr><td>#REQ-1042</td><td>Sarah Kim, Facilities</td><td>Whiteboard Markers</td><td class="text-right">15</td><td class="text-muted">2 hours ago</td></tr>
+            <tr><td>#REQ-1043</td><td>David Lee, Ops</td><td>Safety Gloves (Box of 12)</td><td class="text-right">8</td><td class="text-muted">5 hours ago</td></tr>
+            <tr><td>#REQ-1044</td><td>Fatima Noor, Admin</td><td>Printer Toner (Black)</td><td class="text-right">4</td><td class="text-muted">Yesterday</td></tr>
+            <tr><td>#REQ-1045</td><td>James Okoye, IT</td><td>Hand Sanitizer 500ml</td><td class="text-right">12</td><td class="text-muted">Yesterday</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

@@ -196,11 +196,9 @@ Commands for the next phases will be added to this section as they're run.
 
 ---
 
-## 8. Open items / things to confirm before Phase 2
+## 8. Resolved defaults (no explicit answer given — chose the simpler/reversible option, revisit anytime)
 
-- Do you want unit **conversion** support (e.g. 1 box = 12 pieces), or is each product tracked in exactly one fixed unit? Current plan assumes the latter (simpler).
-- Should Demanders be able to request **multiple products in one request** (a cart-like form), or one product per request? Current plan assumes multiple items per request (via `stock_request_items`), matching "trackable request → approval → issuance" language.
-- Any specific low-stock threshold **default value**, or should it just start at a placeholder (e.g. 10) that Admin edits in Settings?
-- Should rejected request items be resubmittable, or does the Demander have to create a brand-new request?
-
-These don't block Phase 1 (static prototype) — we can settle them alongside it.
+- **Unit conversion**: not supported in v1. Each product is tracked in exactly one fixed unit (e.g. a product is either "Box" or "Piece", not convertible between the two). Simpler schema, matches "units must be fully customizable" without over-building.
+- **Multi-item requests**: yes — a single `StockRequest` can contain multiple `StockRequestItem` rows (cart-like form), as already reflected in the ERD in §3.
+- **Low-stock threshold default**: placeholder value of `10`, stored in `settings.low_stock_threshold`, editable by Admin in Phase 5. Change anytime after seeding.
+- **Rejected items**: terminal — not resubmittable in place. The Demander creates a new `StockRequest` if they still need the item. Keeps status transitions one-directional and simple to audit; can add resubmission later if it proves too rigid in practice.

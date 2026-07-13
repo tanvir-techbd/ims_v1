@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign In · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="logo-mark">IM</div>
+      <div class="name">Inventory MS</div>
+    </div>
+    <h1>Sign in to your account</h1>
+    <div class="auth-sub">Track requests, approvals and stock in one place.</div>
+
+    <form onsubmit="return false;">
+      <div class="field" style="margin-bottom:14px;">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="you@company.com" value="admin@example.com" />
+      </div>
+      <div class="field" style="margin-bottom:8px;">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="••••••••" value="password" />
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; font-size:12.5px; margin-bottom:6px;">
+        <label style="display:flex; align-items:center; gap:6px; color:var(--color-text-muted);">
+          <input type="checkbox" checked style="width:auto;" /> Remember me
+        </label>
+        <a href="#">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+
+    <div class="demo-note">
+      <strong>Prototype note:</strong> this is a static mockup, not a working login. In the real app, roles are:
+      Admin, Approver, Storekeeper, Demander, Supplier — see the dashboard mockups for each.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

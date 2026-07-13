@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Storekeeper Dashboard · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Storekeeper. Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-storekeeper.html" class="active"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html"><span class="icon">📦</span> Products</a>
+      <a href="request-detail.html"><span class="icon">🧾</span> Stock Requests</a>
+      <a href="issuance-screen.html"><span class="icon">📤</span> Issuance</a>
+      <a href="stock-alerts.html"><span class="icon">⚠</span> Stock Alerts</a>
+      <a href="reports.html"><span class="icon">📊</span> Reports</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Miguel Torres</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Dashboard</h1>
+        <div class="subtitle">Issuance queue and stock levels</div>
+      </div>
+      <div class="topbar-right">
+        <a href="product-form.html" class="btn btn-primary btn-sm">+ Record Stock In</a>
+        <div class="user-chip">
+          <div class="avatar">MT</div>
+          <div>
+            <div>Miguel Torres</div>
+            <div class="role-tag">Storekeeper</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="grid grid-3" style="margin-bottom:22px;">
+        <div class="card kpi-tile warn">
+          <div class="kpi-label">Ready to Issue</div>
+          <div class="kpi-value">11</div>
+          <div class="kpi-hint">approved items awaiting pickup</div>
+        </div>
+        <div class="card kpi-tile ok">
+          <div class="kpi-label">Issued Today</div>
+          <div class="kpi-value">36</div>
+          <div class="kpi-hint">units across 9 requests</div>
+        </div>
+        <div class="card kpi-tile alert">
+          <div class="kpi-label">Low Stock Items</div>
+          <div class="kpi-value">7</div>
+          <div class="kpi-hint">may block full issuance</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Approved — Awaiting Issuance</h2>
+          <a href="issuance-screen.html" class="btn btn-primary btn-sm">Open issuance screen</a>
+        </div>
+        <table>
+          <thead><tr><th>Request</th><th>Product</th><th class="text-right">Approved</th><th class="text-right">In Stock</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>#REQ-1041</td><td>Printer Toner (Black)</td><td class="text-right">4</td><td class="text-right">10</td><td><span class="badge badge-approved">Ready</span></td></tr>
+            <tr><td>#REQ-1038</td><td>A4 Paper Ream</td><td class="text-right">15</td><td class="text-right">6</td><td><span class="badge badge-partial">Partial stock only</span></td></tr>
+            <tr><td>#REQ-1038</td><td>Safety Gloves (Box of 12)</td><td class="text-right">6</td><td class="text-right">3</td><td><span class="badge badge-partial">Partial stock only</span></td></tr>
+            <tr><td>#REQ-1036</td><td>Hand Sanitizer 500ml</td><td class="text-right">10</td><td class="text-right">9</td><td><span class="badge badge-partial">Partial stock only</span></td></tr>
+            <tr><td>#REQ-1035</td><td>Whiteboard Markers</td><td class="text-right">5</td><td class="text-right">10</td><td><span class="badge badge-approved">Ready</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>
