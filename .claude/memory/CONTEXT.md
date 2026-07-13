@@ -6,6 +6,24 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
+## 2026-07-14 — Session 1 (continued): Phase 2 (schema & models) COMPLETE
+
+**Phase 2 is done** per `.claude/design/02-schema-and-models.md`. All 9 domain tables migrated (categories, units, products, settings, stock_requests, stock_request_items, request_approvals, stock_movements, stock_issuances), all 9 Eloquent models + factories written, 4 backed enums in `app/Enums/`. 10 feature tests across two files, all passing.
+
+**Environment change worth knowing:** this machine has no `pdo_sqlite`, so the default Laravel testing setup (`DB_CONNECTION=sqlite`, `:memory:`) doesn't work here. `phpunit.xml` now points tests at a separate MySQL database `ims_v1_testing` (created alongside `ims_v1`). `config/database.php` also has an extra `mysql_lock_test` connection — a second independent connection to the same database, used only by `tests/Feature/ConcurrentIssuanceLockTest.php` to prove `lockForUpdate()` is a real DB-level lock (that test deliberately skips `RefreshDatabase` and cleans up its own rows, since RefreshDatabase's transaction-wrapping would hide the setup data from the second connection).
+
+**Gotcha hit and fixed:** `php artisan make:enum Enums/Foo --string` inconsistently nested 3 of the 4 generated enums under `app/Enums/Enums/` instead of `app/Enums/` — had to `rm -rf app/Enums/Enums` and rewrite them at the correct path. Also `php artisan make:migration` gave `request_approvals` and `stock_issuances` timestamps that would have run them *before* tables they have FKs into (`stock_request_items`, `stock_movements`) — renamed the migration files to fix ordering before running them. Worth double-checking migration timestamp order whenever generating several FK-dependent migrations in a batch like this.
+
+**Design decisions made during implementation** (not pre-specified in PLAN.md, recorded here so they're not re-litigated later):
+- `Product::recordStockIn()` / `recordStockOut()` — two named methods instead of one generic `applyStockMovement(type, qty)` as originally sketched in the design doc. Reads clearer at call sites; `adjustment` stays in the `StockMovementType` enum for later but has no method yet (not building it until Phase 3+ actually needs manual stock corrections).
+- All three business-rule violations (approval > requested, issuance > approved, issuance > stock) throw a single `App\Exceptions\InventoryRuleException` rather than three distinct exception classes — the message is written to be shown directly to the user, one exception type was enough for the Filament actions to catch uniformly.
+- `StockRequestItem::approve()` blocks reducing `approved_qty` below what's already been `issued_qty` (not explicitly required, but the alternative — silently letting an item's approved amount drop under its already-issued amount — allows a nonsensical negative "remaining approved". Simple to enforce.
+- `StockRequestItem::reject()` blocks rejecting an item that already had stock issued (same rationale).
+
+**Not done yet / next up:** Phase 3 (Filament CRUD resources) per `.claude/design/03-filament-resources.md` — CategoryResource, UnitResource, ProductResource (with the stock-in action), UserResource role tab, then `shield:generate` to wire up permissions per the matrix in PLAN.md §4.
+
+---
+
 ## 2026-07-14 — Session 1 (continued): Phase 1 static prototype COMPLETE
 
 **Phase 1 is done.** All 14 pages listed in `.claude/design/01-static-prototype.md` exist under `static_prototype/pages/`: `login.html`, `dashboard-admin.html`, `dashboard-approver.html`, `dashboard-storekeeper.html`, `dashboard-demander.html`, `dashboard-supplier.html`, `products.html`, `product-form.html`, `request-new.html`, `request-detail.html`, `approval-queue.html`, `issuance-screen.html`, `stock-alerts.html`, `reports.html`. Shared design system in `assets/css/style.css` + `assets/js/app.js` (real vanilla-JS tab switching on reports.html, real modal open/close on approval-queue.html and issuance-screen.html — not just visual mockups, actually clickable).

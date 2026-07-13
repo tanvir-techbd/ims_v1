@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\RequestItemStatus;
+use App\Enums\RequestStatus;
+use App\Exceptions\InventoryRuleException;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class StockRequest extends Model
+{
+    /** @use HasFactory<\Database\Factories\StockRequestFactory> */
+    use HasFactory;
+
+    protected $fillable = [
+        'requester_id',
+        'status',
+        'notes',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => RequestStatus::class,
+        ];
+    }
+
+    public function requester(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requester_id');
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(StockRequestItem::class);
+    }
+
+    public function cancel(): void
+    {
+        if ($this->status !== RequestStatus::Pending) {
+            throw new InventoryRuleException('Only a request with no decided items yet can be cancelled.');
+        }
+
+        $this->update(['status' => RequestStatus::Cancelled]);
+    }
+
+    /**
+     * Derives the request's overall status from its items' individual
+     * statuses. Called after any item is approved, rejected, or issued —
+     * never set the parent status directly elsewhere.
+     */
+    public function recomputeStatus(): void
+    {
+        $statuses = $this->items()->pluck('status');
+
+        if ($statuses->isEmpty() || $statuses->every(fn (RequestItemStatus $s) => $s === RequestItemStatus::Pending)) {
+            $status = RequestStatus::Pending;
+        } elseif ($statuses->contains(RequestItemStatus::Pending)) {
+            // Some items decided, others still awaiting a decision.
+            $status = RequestStatus::PartiallyApproved;
+        } elseif ($statuses->every(fn (RequestItemStatus $s) => $s === RequestItemStatus::Rejected)) {
+            $status = RequestStatus::Rejected;
+        } elseif ($statuses->every(fn (RequestItemStatus $s) => in_array($s, [RequestItemStatus::Issued, RequestItemStatus::Rejected], true))) {
+            $status = RequestStatus::Issued;
+        } elseif ($statuses->contains(RequestItemStatus::PartiallyIssued) || $statuses->contains(RequestItemStatus::Issued)) {
+            $status = RequestStatus::PartiallyIssued;
+        } else {
+            $status = RequestStatus::Approved;
+        }
+
+        $this->update(['status' => $status]);
+    }
+}

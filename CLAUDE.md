@@ -14,6 +14,7 @@ Inventory Management System for a single organization (one deployment per org, n
 - Laravel Jetstream, Livewire stack, Teams disabled — supplies auth/profile/2FA scaffolding
 - MySQL via local LAMPP (`/opt/lampp`), database `ims_v1`, host `127.0.0.1:3306`, user `root`, no password
 - Local dev PHP extensions required: `intl`, `zip`, `gd`, `bcmath`, `mbstring` (all already installed on this machine)
+- No `pdo_sqlite` on this machine — tests run against a separate MySQL database `ims_v1_testing` (see `phpunit.xml`), not the default in-memory sqlite. `config/database.php` also has a `mysql_lock_test` connection (second independent connection, same DB) used only by the row-lock concurrency test.
 
 ## Local dev environment notes
 

@@ -2,7 +2,7 @@
 
 Stack: Laravel 13 + Filament 3 + Filament Shield (roles/permissions) + Laravel Jetstream (Livewire stack, no Teams) + MySQL (via local LAMPP/XAMPP).
 
-Status: **Phase 0 (environment + base install) and Phase 1 (static prototype) complete.** Open `static_prototype/pages/dashboard-admin.html` (and the others) in a browser to review the workflow before Phase 2 (schema & models) begins.
+Status: **Phases 0–2 complete** (environment/base install, static prototype, schema & models). Phase 3 (Filament CRUD resources) is next.
 
 ---
 
@@ -190,6 +190,49 @@ php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvid
 # Migrate + seed
 php artisan migrate
 php artisan db:seed
+```
+
+### Phase 2 — schema & models
+
+```bash
+# Enums
+php artisan make:enum Enums/RequestStatus --string
+php artisan make:enum Enums/RequestItemStatus --string
+php artisan make:enum Enums/StockMovementType --string
+php artisan make:enum Enums/ApprovalDecision --string
+
+# Migrations (created in FK-dependency order; two had to be renamed after
+# generation because make:migration gave request_approvals and
+# stock_issuances timestamps that sorted before tables they depend on)
+php artisan make:migration create_categories_table
+php artisan make:migration create_units_table
+php artisan make:migration create_products_table
+php artisan make:migration create_settings_table
+php artisan make:migration create_stock_requests_table
+php artisan make:migration create_stock_request_items_table
+php artisan make:migration create_request_approvals_table
+php artisan make:migration create_stock_movements_table
+php artisan make:migration create_stock_issuances_table
+
+# Models + factories
+php artisan make:model Category -f
+php artisan make:model Unit -f
+php artisan make:model Product -f
+php artisan make:model Setting -f
+php artisan make:model StockRequest -f
+php artisan make:model StockRequestItem -f
+php artisan make:model RequestApproval -f
+php artisan make:model StockMovement -f
+php artisan make:model StockIssuance -f
+
+# Separate test database (this machine has no pdo_sqlite, so phpunit.xml
+# points DB_CONNECTION=mysql / DB_DATABASE=ims_v1_testing instead of the
+# usual :memory: sqlite default — see config/database.php's extra
+# 'mysql_lock_test' connection too, used only by the row-lock test)
+/opt/lampp/bin/mysql -u root -e "CREATE DATABASE IF NOT EXISTS ims_v1_testing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+php artisan migrate:fresh --seed
+php artisan test
 ```
 
 Commands for the next phases will be added to this section as they're run.

@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -67,5 +68,25 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function stockRequests(): HasMany
+    {
+        return $this->hasMany(StockRequest::class, 'requester_id');
+    }
+
+    public function approvalsMade(): HasMany
+    {
+        return $this->hasMany(RequestApproval::class, 'approver_id');
+    }
+
+    public function issuancesMade(): HasMany
+    {
+        return $this->hasMany(StockIssuance::class, 'storekeeper_id');
+    }
+
+    public function stockMovementsRecorded(): HasMany
+    {
+        return $this->hasMany(StockMovement::class, 'created_by');
     }
 }

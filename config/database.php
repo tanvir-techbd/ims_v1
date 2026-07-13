@@ -64,6 +64,23 @@ return [
             ]) : [],
         ],
 
+        // A second, independent connection to the same database as 'mysql' —
+        // used only by tests that need to prove a row lock (lockForUpdate)
+        // actually blocks a concurrent transaction, which requires two real
+        // PDO connections rather than one connection reused twice.
+        'mysql_lock_test' => [
+            'driver' => 'mysql',
+            'url' => env('DB_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'laravel'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),
