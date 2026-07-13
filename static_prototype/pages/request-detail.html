@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Request #REQ-1038 · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — request detail / full trail view. Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-admin.html"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html"><span class="icon">📦</span> Products</a>
+      <a href="products.html"><span class="icon">🏷</span> Categories &amp; Units</a>
+      <a href="request-detail.html" class="active"><span class="icon">🧾</span> Stock Requests</a>
+      <a href="approval-queue.html"><span class="icon">✅</span> Approvals</a>
+      <a href="issuance-screen.html"><span class="icon">📤</span> Issuance</a>
+      <a href="stock-alerts.html"><span class="icon">⚠</span> Stock Alerts</a>
+      <a href="reports.html"><span class="icon">📊</span> Reports</a>
+      <a href="#"><span class="icon">🕒</span> Audit Log</a>
+      <a href="#"><span class="icon">👥</span> Users &amp; Roles</a>
+      <a href="#"><span class="icon">⚙</span> Settings</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Admin User</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Request #REQ-1038</h1>
+        <div class="subtitle"><a href="dashboard-admin.html">← Back to Stock Requests</a> · Requested by Fatima Noor, Admin Dept · Jul 10, 2026</div>
+      </div>
+      <div class="topbar-right">
+        <span class="badge badge-partial" style="font-size:12.5px; padding:6px 14px;">Partially Issued</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="grid" style="grid-template-columns: 1.4fr 1fr; align-items:start;">
+
+        <div class="card">
+          <div class="card-header"><h2>Requested Items</h2></div>
+          <table>
+            <thead>
+              <tr><th>Product</th><th class="text-right">Requested</th><th class="text-right">Approved</th><th class="text-right">Issued</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A4 Paper Ream</td>
+                <td class="text-right">15</td>
+                <td class="text-right">15</td>
+                <td class="text-right">15</td>
+                <td><span class="badge badge-issued">Issued</span></td>
+              </tr>
+              <tr>
+                <td>Safety Gloves (Box of 12)</td>
+                <td class="text-right">10</td>
+                <td class="text-right">6</td>
+                <td class="text-right">3</td>
+                <td><span class="badge badge-partial">Partially Issued</span></td>
+              </tr>
+              <tr>
+                <td>Sticky Notes (Pack)</td>
+                <td class="text-right">8</td>
+                <td class="text-right">0</td>
+                <td class="text-right">0</td>
+                <td><span class="badge badge-rejected">Rejected</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="hint" style="margin-top:14px;">
+            Approved is always ≤ requested. Issued is always ≤ approved, and further capped by actual stock
+            on hand at the moment the storekeeper acts — which is why Safety Gloves shows approved 6 but issued
+            only 3 so far.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2>Request Notes</h2></div>
+          <p style="font-size:13.5px; color:var(--color-text-muted); margin:0;">
+            "Restocking the front desk and 2nd floor print station — running low ahead of the quarterly audit."
+          </p>
+        </div>
+      </div>
+
+      <div class="section-title">Full Trail — Safety Gloves (Box of 12)</div>
+      <div class="card">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot requested">🧾</div>
+            <div class="timeline-body">
+              <div class="timeline-title">Requested — 10 boxes</div>
+              <div class="timeline-meta">Fatima Noor · Jul 10, 2026, 9:14 AM</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot approved">✅</div>
+            <div class="timeline-body">
+              <div class="timeline-title">Approved — 6 of 10 boxes</div>
+              <div class="timeline-meta">Jane Whitfield (Approver) · Jul 10, 2026, 2:40 PM · "Reduced to match this month's PPE budget."</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot issued">📤</div>
+            <div class="timeline-body">
+              <div class="timeline-title">Issued — 3 of 6 approved boxes</div>
+              <div class="timeline-meta">Miguel Torres (Storekeeper) · Jul 11, 2026, 10:02 AM · "Only 3 boxes in stock at time of issuance — remainder pending restock."</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--color-pending-bg); color:var(--color-pending);">⏳</div>
+            <div class="timeline-body">
+              <div class="timeline-title">Awaiting further stock — 3 boxes remaining</div>
+              <div class="timeline-meta">Will auto-resolve once stock is replenished and re-issued</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Full Trail — Sticky Notes (Pack)</div>
+      <div class="card">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot requested">🧾</div>
+            <div class="timeline-body">
+              <div class="timeline-title">Requested — 8 packs</div>
+              <div class="timeline-meta">Fatima Noor · Jul 10, 2026, 9:14 AM</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot rejected">✕</div>
+            <div class="timeline-body">
+              <div class="timeline-title">Rejected</div>
+              <div class="timeline-meta">Jane Whitfield (Approver) · Jul 10, 2026, 2:41 PM · "Already issued 20 packs to Admin Dept last week — please confirm need before resubmitting."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

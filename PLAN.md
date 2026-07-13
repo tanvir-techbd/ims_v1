@@ -2,7 +2,7 @@
 
 Stack: Laravel 13 + Filament 3 + Filament Shield (roles/permissions) + Laravel Jetstream (Livewire stack, no Teams) + MySQL (via local LAMPP/XAMPP).
 
-Status: **Phase 0 (environment + base install) complete.** Phase 1 (static prototype) is next and requires your sign-off on this document first.
+Status: **Phase 0 (environment + base install) and Phase 1 (static prototype) complete.** Open `static_prototype/pages/dashboard-admin.html` (and the others) in a browser to review the workflow before Phase 2 (schema & models) begins.
 
 ---
 

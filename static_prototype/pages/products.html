@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Products · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Admin. Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-admin.html"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html" class="active"><span class="icon">📦</span> Products</a>
+      <a href="products.html"><span class="icon">🏷</span> Categories &amp; Units</a>
+      <a href="request-detail.html"><span class="icon">🧾</span> Stock Requests</a>
+      <a href="approval-queue.html"><span class="icon">✅</span> Approvals</a>
+      <a href="issuance-screen.html"><span class="icon">📤</span> Issuance</a>
+      <a href="stock-alerts.html"><span class="icon">⚠</span> Stock Alerts</a>
+      <a href="reports.html"><span class="icon">📊</span> Reports</a>
+      <a href="#"><span class="icon">🕒</span> Audit Log</a>
+      <a href="#"><span class="icon">👥</span> Users &amp; Roles</a>
+      <a href="#"><span class="icon">⚙</span> Settings</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Admin User</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Products</h1>
+        <div class="subtitle">248 products across 12 categories</div>
+      </div>
+      <div class="topbar-right">
+        <a href="product-form.html" class="btn btn-primary btn-sm">+ Add Product</a>
+        <div class="user-chip">
+          <div class="avatar">AU</div>
+          <div>
+            <div>Admin User</div>
+            <div class="role-tag">Admin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <div class="search-box">
+              <span class="icon">🔍</span>
+              <input type="text" placeholder="Search by name or SKU…" />
+            </div>
+            <select class="filter-select">
+              <option>All Categories</option>
+              <option>Stationery</option>
+              <option>PPE</option>
+              <option>Hygiene</option>
+              <option>IT Supplies</option>
+              <option>Electrical</option>
+            </select>
+            <select class="filter-select">
+              <option>All Stock Levels</option>
+              <option>Low stock only</option>
+              <option>In stock</option>
+            </select>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th><th>SKU</th><th>Category</th><th>Unit</th><th class="text-right">Stock on Hand</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Safety Gloves (Box of 12)</td><td class="text-muted">PPE-GLV-001</td><td>PPE</td><td>Box</td>
+              <td class="text-right"><span class="badge badge-rejected">Low · 3</span></td>
+              <td><a href="product-form.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td>A4 Paper Ream</td><td class="text-muted">STA-PPR-014</td><td>Stationery</td><td>Ream</td>
+              <td class="text-right"><span class="badge badge-rejected">Low · 6</span></td>
+              <td><a href="product-form.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td>Hand Sanitizer 500ml</td><td class="text-muted">HYG-SAN-002</td><td>Hygiene</td><td>Bottle</td>
+              <td class="text-right"><span class="badge badge-pending">Low · 9</span></td>
+              <td><a href="product-form.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td>Printer Toner (Black)</td><td class="text-muted">ITS-TNR-007</td><td>IT Supplies</td><td>Piece</td>
+              <td class="text-right"><span class="badge badge-pending">Low · 10</span></td>
+              <td><a href="product-form.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td>Whiteboard Markers</td><td class="text-muted">STA-MRK-009</td><td>Stationery</td><td>Piece</td>
+              <td class="text-right"><span class="badge badge-pending">Low · 10</span></td>
+              <td><a href="product-form.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td>Stapler</td><td class="text-muted">STA-STP-003</td><td>Stationery</td><td>Piece</td>
+              <td class="text-right">42</td>
+              <td><a href="product-form.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td>Extension Cord (5m)</td><td class="text-muted">ELE-EXC-011</td><td>Electrical</td><td>Piece</td>
+              <td class="text-right">28</td>
+              <td><a href="product-form.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td>Sticky Notes (Pack)</td><td class="text-muted">STA-STN-006</td><td>Stationery</td><td>Pack</td>
+              <td class="text-right">65</td>
+              <td><a href="product-form.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td>Face Masks (Box of 50)</td><td class="text-muted">PPE-MSK-004</td><td>PPE</td><td>Box</td>
+              <td class="text-right">31</td>
+              <td><a href="product-form.html">Edit</a></td>
+            </tr>
+            <tr>
+              <td>Cleaning Spray 750ml</td><td class="text-muted">HYG-CLN-005</td><td>Hygiene</td><td>Bottle</td>
+              <td class="text-right">54</td>
+              <td><a href="product-form.html">Edit</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

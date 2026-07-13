@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Edit Product · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Admin / Storekeeper. Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-admin.html"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html" class="active"><span class="icon">📦</span> Products</a>
+      <a href="products.html"><span class="icon">🏷</span> Categories &amp; Units</a>
+      <a href="request-detail.html"><span class="icon">🧾</span> Stock Requests</a>
+      <a href="approval-queue.html"><span class="icon">✅</span> Approvals</a>
+      <a href="issuance-screen.html"><span class="icon">📤</span> Issuance</a>
+      <a href="stock-alerts.html"><span class="icon">⚠</span> Stock Alerts</a>
+      <a href="reports.html"><span class="icon">📊</span> Reports</a>
+      <a href="#"><span class="icon">🕒</span> Audit Log</a>
+      <a href="#"><span class="icon">👥</span> Users &amp; Roles</a>
+      <a href="#"><span class="icon">⚙</span> Settings</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Admin User</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Edit Product</h1>
+        <div class="subtitle"><a href="products.html">← Back to Products</a></div>
+      </div>
+      <div class="topbar-right">
+        <div class="user-chip">
+          <div class="avatar">AU</div>
+          <div>
+            <div>Admin User</div>
+            <div class="role-tag">Admin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="grid" style="grid-template-columns: 2fr 1fr; align-items:start;">
+        <div class="card">
+          <div class="card-header"><h2>Product Details</h2></div>
+          <form onsubmit="return false;">
+            <div class="form-grid">
+              <div class="field span-2">
+                <label>Product Name</label>
+                <input type="text" value="Safety Gloves (Box of 12)" />
+              </div>
+              <div class="field">
+                <label>SKU</label>
+                <input type="text" value="PPE-GLV-001" />
+              </div>
+              <div class="field">
+                <label>Category</label>
+                <select>
+                  <option>PPE</option>
+                  <option>Stationery</option>
+                  <option>Hygiene</option>
+                  <option>IT Supplies</option>
+                  <option>Electrical</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Unit</label>
+                <select>
+                  <option>Box</option>
+                  <option>Piece</option>
+                  <option>Ream</option>
+                  <option>Bottle</option>
+                  <option>Pack</option>
+                  <option>Litre</option>
+                </select>
+                <div class="hint">Units are fully customizable — manage the list under Categories &amp; Units.</div>
+              </div>
+              <div class="field">
+                <label>Current Stock</label>
+                <input type="number" value="3" disabled />
+                <div class="hint">Read-only here — changes go through Stock In / Issuance so the ledger stays accurate.</div>
+              </div>
+              <div class="field span-2">
+                <label>Description</label>
+                <textarea>Disposable nitrile safety gloves, one box contains 12 pairs. Used across facilities and maintenance teams.</textarea>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2>Record Stock In</h2></div>
+          <p class="text-muted" style="font-size:12.5px; margin-top:-6px;">
+            Storekeeper/Admin only — Suppliers have read-only visibility and cannot post stock-in entries.
+          </p>
+          <div class="field" style="margin-bottom:12px;">
+            <label>Quantity Received</label>
+            <input type="number" placeholder="e.g. 50" />
+          </div>
+          <div class="field" style="margin-bottom:14px;">
+            <label>Note</label>
+            <textarea placeholder="e.g. PO-2291 delivery from Global Supplies Ltd."></textarea>
+          </div>
+          <button type="button" class="btn btn-primary" style="width:100%; justify-content:center;">Add to Stock</button>
+
+          <div style="margin-top:20px; border-top:1px solid var(--color-border); padding-top:16px;">
+            <div style="font-size:12.5px; font-weight:700; margin-bottom:10px;">Recent Stock Movements</div>
+            <table>
+              <tbody>
+                <tr><td class="text-muted nowrap">Jul 12</td><td>+50 (stock in)</td></tr>
+                <tr><td class="text-muted nowrap">Jul 10</td><td style="color:var(--color-rejected);">−6 (issued, REQ-1038)</td></tr>
+                <tr><td class="text-muted nowrap">Jul 03</td><td style="color:var(--color-rejected);">−4 (issued, REQ-1029)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

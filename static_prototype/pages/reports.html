@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reports · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Admin. Not wired to a backend. Tab switching is real (vanilla JS).</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-admin.html"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html"><span class="icon">📦</span> Products</a>
+      <a href="products.html"><span class="icon">🏷</span> Categories &amp; Units</a>
+      <a href="request-detail.html"><span class="icon">🧾</span> Stock Requests</a>
+      <a href="approval-queue.html"><span class="icon">✅</span> Approvals</a>
+      <a href="issuance-screen.html"><span class="icon">📤</span> Issuance</a>
+      <a href="stock-alerts.html"><span class="icon">⚠</span> Stock Alerts</a>
+      <a href="reports.html" class="active"><span class="icon">📊</span> Reports</a>
+      <a href="#"><span class="icon">🕒</span> Audit Log</a>
+      <a href="#"><span class="icon">👥</span> Users &amp; Roles</a>
+      <a href="#"><span class="icon">⚙</span> Settings</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Admin User</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Reports</h1>
+        <div class="subtitle">Issued quantities and user activity, by period</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-secondary btn-sm">⬇ Export Excel</button>
+        <button class="btn btn-secondary btn-sm">⬇ Export CSV</button>
+        <div class="user-chip">
+          <div class="avatar">AU</div>
+          <div>
+            <div>Admin User</div>
+            <div class="role-tag">Admin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div data-tabs>
+        <div class="tabs">
+          <a href="#" data-tab-btn="daily" class="active">Daily</a>
+          <a href="#" data-tab-btn="monthly">Monthly</a>
+          <a href="#" data-tab-btn="yearly">Yearly</a>
+        </div>
+
+        <!-- DAILY -->
+        <div data-tab-panel="daily">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <label class="text-muted" style="font-size:12.5px;">Date</label>
+              <input type="date" value="2026-07-14" class="filter-select" />
+            </div>
+          </div>
+
+          <div class="section-title">Products Issued — Jul 14, 2026</div>
+          <div class="card" style="margin-bottom:20px;">
+            <table>
+              <thead><tr><th>Product</th><th>Category</th><th class="text-right">Qty Issued</th><th class="text-right">Requests</th></tr></thead>
+              <tbody>
+                <tr><td>A4 Paper Ream</td><td>Stationery</td><td class="text-right">15</td><td class="text-right">1</td></tr>
+                <tr><td>Printer Toner (Black)</td><td>IT Supplies</td><td class="text-right">4</td><td class="text-right">1</td></tr>
+                <tr><td>Safety Gloves (Box of 12)</td><td>PPE</td><td class="text-right">3</td><td class="text-right">1</td></tr>
+                <tr><td>Whiteboard Markers</td><td>Stationery</td><td class="text-right">5</td><td class="text-right">1</td></tr>
+                <tr><td><strong>Total</strong></td><td></td><td class="text-right"><strong>27</strong></td><td class="text-right"><strong>4</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section-title">User Activity — Jul 14, 2026</div>
+          <div class="card">
+            <table>
+              <thead><tr><th>User</th><th>Role</th><th class="text-right">Requests Created</th><th class="text-right">Approvals Made</th><th class="text-right">Issuances Made</th></tr></thead>
+              <tbody>
+                <tr><td>Sarah Kim</td><td>Demander</td><td class="text-right">1</td><td class="text-right">—</td><td class="text-right">—</td></tr>
+                <tr><td>Jane Whitfield</td><td>Approver</td><td class="text-right">—</td><td class="text-right">5</td><td class="text-right">—</td></tr>
+                <tr><td>Miguel Torres</td><td>Storekeeper</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">4</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- MONTHLY -->
+        <div data-tab-panel="monthly" style="display:none;">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <label class="text-muted" style="font-size:12.5px;">Month</label>
+              <input type="month" value="2026-07" class="filter-select" />
+            </div>
+          </div>
+
+          <div class="section-title">Products Issued — July 2026</div>
+          <div class="card" style="margin-bottom:20px;">
+            <table>
+              <thead><tr><th>Product</th><th>Category</th><th class="text-right">Qty Issued</th><th class="text-right">Requests</th></tr></thead>
+              <tbody>
+                <tr><td>A4 Paper Ream</td><td>Stationery</td><td class="text-right">148</td><td class="text-right">12</td></tr>
+                <tr><td>Safety Gloves (Box of 12)</td><td>PPE</td><td class="text-right">61</td><td class="text-right">9</td></tr>
+                <tr><td>Hand Sanitizer 500ml</td><td>Hygiene</td><td class="text-right">54</td><td class="text-right">7</td></tr>
+                <tr><td>Printer Toner (Black)</td><td>IT Supplies</td><td class="text-right">22</td><td class="text-right">6</td></tr>
+                <tr><td><strong>Total</strong></td><td></td><td class="text-right"><strong>285</strong></td><td class="text-right"><strong>34</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section-title">User Activity — July 2026</div>
+          <div class="card">
+            <table>
+              <thead><tr><th>User</th><th>Role</th><th class="text-right">Requests Created</th><th class="text-right">Approvals Made</th><th class="text-right">Issuances Made</th></tr></thead>
+              <tbody>
+                <tr><td>Sarah Kim</td><td>Demander</td><td class="text-right">9</td><td class="text-right">—</td><td class="text-right">—</td></tr>
+                <tr><td>David Lee</td><td>Demander</td><td class="text-right">7</td><td class="text-right">—</td><td class="text-right">—</td></tr>
+                <tr><td>Jane Whitfield</td><td>Approver</td><td class="text-right">—</td><td class="text-right">31</td><td class="text-right">—</td></tr>
+                <tr><td>Miguel Torres</td><td>Storekeeper</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">29</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- YEARLY -->
+        <div data-tab-panel="yearly" style="display:none;">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <label class="text-muted" style="font-size:12.5px;">Year</label>
+              <select class="filter-select"><option>2026</option><option>2025</option></select>
+            </div>
+          </div>
+
+          <div class="section-title">Products Issued — 2026</div>
+          <div class="card" style="margin-bottom:20px;">
+            <table>
+              <thead><tr><th>Product</th><th>Category</th><th class="text-right">Qty Issued</th><th class="text-right">Requests</th></tr></thead>
+              <tbody>
+                <tr><td>A4 Paper Ream</td><td>Stationery</td><td class="text-right">1,204</td><td class="text-right">96</td></tr>
+                <tr><td>Safety Gloves (Box of 12)</td><td>PPE</td><td class="text-right">640</td><td class="text-right">74</td></tr>
+                <tr><td>Hand Sanitizer 500ml</td><td>Hygiene</td><td class="text-right">512</td><td class="text-right">61</td></tr>
+                <tr><td>Printer Toner (Black)</td><td>IT Supplies</td><td class="text-right">198</td><td class="text-right">44</td></tr>
+                <tr><td><strong>Total</strong></td><td></td><td class="text-right"><strong>2,554</strong></td><td class="text-right"><strong>275</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section-title">User Activity — 2026</div>
+          <div class="card">
+            <table>
+              <thead><tr><th>User</th><th>Role</th><th class="text-right">Requests Created</th><th class="text-right">Approvals Made</th><th class="text-right">Issuances Made</th></tr></thead>
+              <tbody>
+                <tr><td>Sarah Kim</td><td>Demander</td><td class="text-right">61</td><td class="text-right">—</td><td class="text-right">—</td></tr>
+                <tr><td>Jane Whitfield</td><td>Approver</td><td class="text-right">—</td><td class="text-right">240</td><td class="text-right">—</td></tr>
+                <tr><td>Miguel Torres</td><td>Storekeeper</td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right">228</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

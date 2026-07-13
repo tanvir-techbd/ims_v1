@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stock Alerts · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Admin. Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-admin.html"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html"><span class="icon">📦</span> Products</a>
+      <a href="products.html"><span class="icon">🏷</span> Categories &amp; Units</a>
+      <a href="request-detail.html"><span class="icon">🧾</span> Stock Requests</a>
+      <a href="approval-queue.html"><span class="icon">✅</span> Approvals</a>
+      <a href="issuance-screen.html"><span class="icon">📤</span> Issuance</a>
+      <a href="stock-alerts.html" class="active"><span class="icon">⚠</span> Stock Alerts</a>
+      <a href="reports.html"><span class="icon">📊</span> Reports</a>
+      <a href="#"><span class="icon">🕒</span> Audit Log</a>
+      <a href="#"><span class="icon">👥</span> Users &amp; Roles</a>
+      <a href="#"><span class="icon">⚙</span> Settings</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Admin User</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Stock Alerts</h1>
+        <div class="subtitle">Products at or below the low-stock threshold</div>
+      </div>
+      <div class="topbar-right">
+        <div class="user-chip">
+          <div class="avatar">AU</div>
+          <div>
+            <div>Admin User</div>
+            <div class="role-tag">Admin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="card" style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <div style="font-size:13px; font-weight:700;">Global Low-Stock Threshold</div>
+          <div class="text-muted" style="font-size:12.5px; margin-top:2px;">
+            A single system-wide number — products at or below this are flagged here, regardless of category. Admin-editable in Settings.
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <input type="number" value="10" style="width:70px; text-align:center; border:1px solid var(--color-border); border-radius:8px; padding:8px;" />
+          <button class="btn btn-primary btn-sm">Update</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>7 Products At or Below Threshold</h2>
+          <div class="search-box">
+            <span class="icon">🔍</span>
+            <input type="text" placeholder="Search…" />
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Product</th><th>Category</th><th>Unit</th><th class="text-right">Stock on Hand</th><th class="text-right">Threshold</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Safety Gloves (Box of 12)</td><td>PPE</td><td>Box</td>
+              <td class="text-right" style="color:var(--color-rejected); font-weight:700;">3</td>
+              <td class="text-right text-muted">10</td>
+              <td><a href="product-form.html" class="btn btn-secondary btn-sm">Restock</a></td>
+            </tr>
+            <tr>
+              <td>A4 Paper Ream</td><td>Stationery</td><td>Ream</td>
+              <td class="text-right" style="color:var(--color-rejected); font-weight:700;">6</td>
+              <td class="text-right text-muted">10</td>
+              <td><a href="product-form.html" class="btn btn-secondary btn-sm">Restock</a></td>
+            </tr>
+            <tr>
+              <td>Hand Sanitizer 500ml</td><td>Hygiene</td><td>Bottle</td>
+              <td class="text-right" style="color:var(--color-pending); font-weight:700;">9</td>
+              <td class="text-right text-muted">10</td>
+              <td><a href="product-form.html" class="btn btn-secondary btn-sm">Restock</a></td>
+            </tr>
+            <tr>
+              <td>Printer Toner (Black)</td><td>IT Supplies</td><td>Piece</td>
+              <td class="text-right" style="color:var(--color-pending); font-weight:700;">10</td>
+              <td class="text-right text-muted">10</td>
+              <td><a href="product-form.html" class="btn btn-secondary btn-sm">Restock</a></td>
+            </tr>
+            <tr>
+              <td>Whiteboard Markers</td><td>Stationery</td><td>Piece</td>
+              <td class="text-right" style="color:var(--color-pending); font-weight:700;">10</td>
+              <td class="text-right text-muted">10</td>
+              <td><a href="product-form.html" class="btn btn-secondary btn-sm">Restock</a></td>
+            </tr>
+            <tr>
+              <td>Disinfectant Wipes</td><td>Hygiene</td><td>Pack</td>
+              <td class="text-right" style="color:var(--color-pending); font-weight:700;">8</td>
+              <td class="text-right text-muted">10</td>
+              <td><a href="product-form.html" class="btn btn-secondary btn-sm">Restock</a></td>
+            </tr>
+            <tr>
+              <td>USB-C Cables</td><td>IT Supplies</td><td>Piece</td>
+              <td class="text-right" style="color:var(--color-pending); font-weight:700;">5</td>
+              <td class="text-right text-muted">10</td>
+              <td><a href="product-form.html" class="btn btn-secondary btn-sm">Restock</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

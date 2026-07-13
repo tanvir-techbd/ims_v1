@@ -1,6 +1,6 @@
 # Phase 1 — Static Prototype
 
-Status: **not started** — blocked on user approval of `PLAN.md`.
+Status: **done** (2026-07-14). All 14 pages built under `static_prototype/pages/`, shared design system in `static_prototype/assets/`. See `.claude/memory/CONTEXT.md` for what carried over into the design conventions for later phases.
 
 ## Goal
 

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Issuance · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Storekeeper. Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-storekeeper.html"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html"><span class="icon">📦</span> Products</a>
+      <a href="request-detail.html"><span class="icon">🧾</span> Stock Requests</a>
+      <a href="issuance-screen.html" class="active"><span class="icon">📤</span> Issuance</a>
+      <a href="stock-alerts.html"><span class="icon">⚠</span> Stock Alerts</a>
+      <a href="reports.html"><span class="icon">📊</span> Reports</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Miguel Torres</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Issuance</h1>
+        <div class="subtitle">Approved items awaiting pickup — issue up to what's actually in stock</div>
+      </div>
+      <div class="topbar-right">
+        <div class="user-chip">
+          <div class="avatar">MT</div>
+          <div>
+            <div>Miguel Torres</div>
+            <div class="role-tag">Storekeeper</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <div class="search-box">
+              <span class="icon">🔍</span>
+              <input type="text" placeholder="Search by requester or product…" />
+            </div>
+            <select class="filter-select">
+              <option>All Requests</option>
+              <option>Fully coverable now</option>
+              <option>Stock-limited</option>
+            </select>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Request</th><th>Requester</th><th>Product</th><th class="text-right">Approved</th><th class="text-right">Already Issued</th><th class="text-right">In Stock</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>#REQ-1041</td><td>James Okoye</td><td>Printer Toner (Black)</td>
+              <td class="text-right">4</td><td class="text-right">0</td><td class="text-right">10</td>
+              <td class="nowrap"><a href="#" class="btn btn-primary btn-sm" data-open-modal="modal-issue-1">Issue</a></td>
+            </tr>
+            <tr>
+              <td>#REQ-1038</td><td>Fatima Noor</td><td>A4 Paper Ream</td>
+              <td class="text-right">15</td><td class="text-right">0</td><td class="text-right">6</td>
+              <td class="nowrap"><a href="#" class="btn btn-primary btn-sm" data-open-modal="modal-issue-2">Issue</a></td>
+            </tr>
+            <tr>
+              <td>#REQ-1038</td><td>Fatima Noor</td><td>Safety Gloves (Box of 12)</td>
+              <td class="text-right">6</td><td class="text-right">3</td><td class="text-right">3</td>
+              <td class="nowrap"><a href="#" class="btn btn-primary btn-sm" data-open-modal="modal-issue-3">Issue</a></td>
+            </tr>
+            <tr>
+              <td>#REQ-1036</td><td>David Lee</td><td>Hand Sanitizer 500ml</td>
+              <td class="text-right">10</td><td class="text-right">0</td><td class="text-right">9</td>
+              <td class="nowrap"><a href="#" class="btn btn-primary btn-sm" data-open-modal="modal-issue-3">Issue</a></td>
+            </tr>
+            <tr>
+              <td>#REQ-1035</td><td>Sarah Kim</td><td>Whiteboard Markers</td>
+              <td class="text-right">5</td><td class="text-right">0</td><td class="text-right">10</td>
+              <td class="nowrap"><a href="#" class="btn btn-primary btn-sm" data-open-modal="modal-issue-3">Issue</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-issue-1">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Issue — Printer Toner (Black)</h3>
+      <button class="modal-close" data-close-modal>&times;</button>
+    </div>
+    <div class="modal-sub">Request #REQ-1041 · James Okoye, IT</div>
+
+    <div class="field">
+      <label>Approved / Remaining to Issue</label>
+      <input type="number" value="4" disabled />
+    </div>
+    <div class="field">
+      <label>Quantity to Issue Now</label>
+      <input type="number" value="4" max="4" />
+      <div class="hint">Capped at 4 (remaining approved) and 10 (current stock) — whichever is lower.</div>
+    </div>
+    <div class="field">
+      <label>Remarks (optional)</label>
+      <textarea placeholder="e.g. Collected by requester in person"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" data-close-modal>Confirm Issuance</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-issue-2">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Issue — A4 Paper Ream</h3>
+      <button class="modal-close" data-close-modal>&times;</button>
+    </div>
+    <div class="modal-sub">Request #REQ-1038 · Fatima Noor, Admin</div>
+
+    <div class="field">
+      <label>Approved / Remaining to Issue</label>
+      <input type="number" value="15" disabled />
+    </div>
+    <div class="field">
+      <label>Quantity to Issue Now</label>
+      <input type="number" value="6" max="6" />
+      <div class="hint" style="color:var(--color-pending);">
+        Only 6 in stock — capped below the approved 15. Remaining 9 will stay "partially issued" until restocked.
+      </div>
+    </div>
+    <div class="field">
+      <label>Remarks (optional)</label>
+      <textarea placeholder="e.g. Partial issuance — remainder pending restock"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" data-close-modal>Confirm Issuance</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-issue-3">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Issue Item</h3>
+      <button class="modal-close" data-close-modal>&times;</button>
+    </div>
+    <div class="modal-sub">Same issuance form for every item — quantity is capped by both remaining-approved and current stock.</div>
+
+    <div class="field">
+      <label>Approved / Remaining to Issue</label>
+      <input type="number" value="3" disabled />
+    </div>
+    <div class="field">
+      <label>Quantity to Issue Now</label>
+      <input type="number" value="3" max="3" />
+    </div>
+    <div class="field">
+      <label>Remarks (optional)</label>
+      <textarea placeholder="Optional note…"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" data-close-modal>Confirm Issuance</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

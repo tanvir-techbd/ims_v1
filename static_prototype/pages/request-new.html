@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>New Request · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Demander. Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-demander.html"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html"><span class="icon">📦</span> Products</a>
+      <a href="request-detail.html"><span class="icon">🧾</span> My Requests</a>
+      <a href="request-new.html" class="active"><span class="icon">➕</span> New Request</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Sarah Kim</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>New Stock Request</h1>
+        <div class="subtitle">Add one or more products — an approver will review each line</div>
+      </div>
+      <div class="topbar-right">
+        <div class="user-chip">
+          <div class="avatar">SK</div>
+          <div>
+            <div>Sarah Kim</div>
+            <div class="role-tag">Demander</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="card" style="max-width: 900px;">
+        <form onsubmit="return false;">
+          <div class="field span-2" style="margin-bottom:18px;">
+            <label>Notes (optional)</label>
+            <textarea placeholder="Why are these items needed? e.g. Restocking the 3rd floor supply closet."></textarea>
+          </div>
+
+          <div class="card-header" style="margin-bottom:10px;">
+            <h2>Requested Items</h2>
+            <button type="button" class="btn btn-secondary btn-sm">+ Add Line</button>
+          </div>
+
+          <table>
+            <thead>
+              <tr><th style="width:45%;">Product</th><th>Available Stock</th><th class="text-right">Quantity Requested</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <select style="width:100%;">
+                    <option>A4 Paper Ream</option>
+                  </select>
+                </td>
+                <td class="text-muted">6 in stock</td>
+                <td class="text-right"><input type="number" value="20" style="width:80px; text-align:right;" /></td>
+                <td><a href="#" style="color:var(--color-rejected);">Remove</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <select style="width:100%;">
+                    <option>Whiteboard Markers</option>
+                  </select>
+                </td>
+                <td class="text-muted">10 in stock</td>
+                <td class="text-right"><input type="number" value="15" style="width:80px; text-align:right;" /></td>
+                <td><a href="#" style="color:var(--color-rejected);">Remove</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <select style="width:100%;">
+                    <option>— select a product —</option>
+                  </select>
+                </td>
+                <td class="text-muted">—</td>
+                <td class="text-right"><input type="number" placeholder="0" style="width:80px; text-align:right;" /></td>
+                <td><a href="#" style="color:var(--color-rejected);">Remove</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="hint" style="margin-top:10px;">
+            Requesting doesn't reserve stock — an approver decides how much of each item is approved (up to what
+            you requested), and the storekeeper issues based on what's actually available at the time.
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary">Save as Draft</button>
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

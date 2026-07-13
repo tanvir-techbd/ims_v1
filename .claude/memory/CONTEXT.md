@@ -6,17 +6,21 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
-## 2026-07-14 — Session 1 (continued): Phase 1 static prototype in progress
+## 2026-07-14 — Session 1 (continued): Phase 1 static prototype COMPLETE
 
-**Doing right now:** building `static_prototype/pages/*.html` per `.claude/design/01-static-prototype.md`. Design system (`assets/css/style.css`, `assets/js/app.js`) is done — shared sidebar/topbar shell, badge color convention (pending=amber, approved=blue, partial=purple, issued=green, rejected=red, cancelled=gray), KPI tiles, tables, modals, timeline component for the request trail view.
+**Phase 1 is done.** All 14 pages listed in `.claude/design/01-static-prototype.md` exist under `static_prototype/pages/`: `login.html`, `dashboard-admin.html`, `dashboard-approver.html`, `dashboard-storekeeper.html`, `dashboard-demander.html`, `dashboard-supplier.html`, `products.html`, `product-form.html`, `request-new.html`, `request-detail.html`, `approval-queue.html`, `issuance-screen.html`, `stock-alerts.html`, `reports.html`. Shared design system in `assets/css/style.css` + `assets/js/app.js` (real vanilla-JS tab switching on reports.html, real modal open/close on approval-queue.html and issuance-screen.html — not just visual mockups, actually clickable).
 
-**Pages done:** `login.html`, `dashboard-admin.html`, `dashboard-approver.html`, `dashboard-storekeeper.html`, `dashboard-demander.html`, `dashboard-supplier.html` — one dashboard per role, each with a role-appropriate sidebar nav (not the full nav on every page — Demander doesn't see Approvals/Issuance/Users, Supplier only sees Dashboard/Inventory/Alerts, etc.) so they double as a preview of the real Shield-gated navigation.
+**Verified:** every page has balanced `<div>`/`</div>` tags (scripted check), and all 14 served HTTP 200 from a local `python3 -m http.server`. Not visually screenshotted (no browser/screenshot tool available in this environment) — if picking this up next, worth the user actually opening `static_prototype/pages/dashboard-admin.html` in a browser to eyeball it before Phase 2 starts.
 
-**Still to build:** `products.html`, `product-form.html`, `request-new.html`, `request-detail.html` (the trail/timeline view — the most important page for the "fully trackable" requirement), `approval-queue.html`, `issuance-screen.html`, `stock-alerts.html`, `reports.html`.
+**Key design decisions baked into the pages** (carry these into the real Filament build in Phase 3+):
+- Badge colors: pending=amber, approved=blue, partial=purple, issued=green, rejected=red, cancelled=gray.
+- Each role's dashboard shows only the nav items that role should see (Shield-gated later) — Demander: Dashboard/Products/My Requests/New Request only; Supplier: Dashboard/Inventory/Alerts only (fully read-only, no action buttons anywhere on `dashboard-supplier.html`); Approver adds Approvals; Storekeeper adds Issuance; Admin sees everything including Users & Roles / Settings / Audit Log (those three are placeholder `#` links — no dedicated static page was built for them since they're standard CRUD/settings screens, low ambiguity).
+- `request-detail.html` is the reference for the "fully trackable" requirement — per-product timeline showing requested → approved (with approver + remarks) → issued (possibly partial, with storekeeper + remarks + explicit note about why partial e.g. insufficient stock).
+- `approval-queue.html` / `issuance-screen.html` modals show the qty cap rule directly in the hint text (approved ≤ requested; issued ≤ min(remaining approved, current stock)) — the real Filament actions must enforce this server-side, the static prototype only shows it as a UI hint.
 
 **Also resolved this session:** the 4 open questions from PLAN.md §8 were answered with defaults rather than blocking on the user (documented as "Resolved defaults" in PLAN.md §8, all reversible/low-stakes): no unit conversion in v1, multi-item requests allowed, low-stock threshold defaults to 10, rejected items are terminal (new request needed, no resubmission).
 
-**Not done yet:** PLAN.md itself is still awaiting explicit user sign-off (they said "continue" which we've treated as approval to proceed, but haven't had them explicitly confirm the plan document). Phase 2 (schema/models) has not started — don't jump into migrations until Phase 1 pages are complete and at least implicitly reviewed.
+**Not done yet / next up:** Phase 2 (schema & models) per `.claude/design/02-schema-and-models.md` — migrations for categories, units, products, settings, stock_requests, stock_request_items, request_approvals, stock_movements, stock_issuances, plus Eloquent models and the PHP backed enums. PLAN.md itself has not had an explicit "yes this looks right" from the user (they said "continue" which has been treated as approval to keep moving), so if anything in Phase 1's pages looks off to them, expect possible revisions before Phase 2 locks in the schema.
 
 ---
 

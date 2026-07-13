@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Approval Queue · Inventory Management System</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<div class="proto-banner"><strong>Static prototype</strong> — role: Approver. Not wired to a backend.</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-mark">IM</div> Inventory MS</div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-approver.html"><span class="icon">▦</span> Dashboard</a>
+      <a href="products.html"><span class="icon">📦</span> Products</a>
+      <a href="request-detail.html"><span class="icon">🧾</span> Stock Requests</a>
+      <a href="approval-queue.html" class="active"><span class="icon">✅</span> Approvals</a>
+      <a href="stock-alerts.html"><span class="icon">⚠</span> Stock Alerts</a>
+      <a href="reports.html"><span class="icon">📊</span> Reports</a>
+    </nav>
+
+    <div class="sidebar-footer">Signed in as<br /><strong style="color:#fff;">Jane Whitfield</strong></div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div>
+        <h1>Approval Queue</h1>
+        <div class="subtitle">9 items awaiting your decision</div>
+      </div>
+      <div class="topbar-right">
+        <div class="user-chip">
+          <div class="avatar">JW</div>
+          <div>
+            <div>Jane Whitfield</div>
+            <div class="role-tag">Approver</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <div class="search-box">
+              <span class="icon">🔍</span>
+              <input type="text" placeholder="Search by requester or product…" />
+            </div>
+            <select class="filter-select">
+              <option>All Requesters</option>
+              <option>Sarah Kim</option>
+              <option>David Lee</option>
+              <option>Fatima Noor</option>
+              <option>James Okoye</option>
+            </select>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Request</th><th>Requester</th><th>Product</th><th class="text-right">Requested Qty</th><th class="text-right">In Stock</th><th>Submitted</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>#REQ-1042</td><td>Sarah Kim</td><td>A4 Paper Ream</td>
+              <td class="text-right">20</td><td class="text-right">6</td><td class="text-muted">2 hours ago</td>
+              <td class="nowrap">
+                <a href="#" class="btn btn-primary btn-sm" data-open-modal="modal-approve-1">Review</a>
+              </td>
+            </tr>
+            <tr>
+              <td>#REQ-1042</td><td>Sarah Kim</td><td>Whiteboard Markers</td>
+              <td class="text-right">15</td><td class="text-right">10</td><td class="text-muted">2 hours ago</td>
+              <td class="nowrap">
+                <a href="#" class="btn btn-primary btn-sm" data-open-modal="modal-approve-2">Review</a>
+              </td>
+            </tr>
+            <tr>
+              <td>#REQ-1043</td><td>David Lee</td><td>Safety Gloves (Box of 12)</td>
+              <td class="text-right">8</td><td class="text-right">3</td><td class="text-muted">5 hours ago</td>
+              <td class="nowrap">
+                <a href="#" class="btn btn-primary btn-sm" data-open-modal="modal-approve-3">Review</a>
+              </td>
+            </tr>
+            <tr>
+              <td>#REQ-1044</td><td>Fatima Noor</td><td>Printer Toner (Black)</td>
+              <td class="text-right">4</td><td class="text-right">10</td><td class="text-muted">Yesterday</td>
+              <td class="nowrap">
+                <a href="#" class="btn btn-primary btn-sm" data-open-modal="modal-approve-3">Review</a>
+              </td>
+            </tr>
+            <tr>
+              <td>#REQ-1045</td><td>James Okoye</td><td>Hand Sanitizer 500ml</td>
+              <td class="text-right">12</td><td class="text-right">9</td><td class="text-muted">Yesterday</td>
+              <td class="nowrap">
+                <a href="#" class="btn btn-primary btn-sm" data-open-modal="modal-approve-3">Review</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Review / Approve / Reject -->
+<div class="modal-overlay" id="modal-approve-1">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Review — A4 Paper Ream</h3>
+      <button class="modal-close" data-close-modal>&times;</button>
+    </div>
+    <div class="modal-sub">Requested by Sarah Kim (Facilities) · Request #REQ-1042</div>
+
+    <div class="field">
+      <label>Requested Quantity</label>
+      <input type="number" value="20" disabled />
+    </div>
+    <div class="field">
+      <label>Approved Quantity</label>
+      <input type="number" value="20" max="20" />
+      <div class="hint">Cannot exceed the requested quantity (20). Currently 6 in stock — the storekeeper will issue what's available regardless of approved amount.</div>
+    </div>
+    <div class="field">
+      <label>Remarks (optional)</label>
+      <textarea placeholder="Reason for reducing, or any note for the storekeeper…"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-danger" data-close-modal>Reject</button>
+      <button class="btn btn-primary" data-close-modal>Approve</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-approve-2">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Review — Whiteboard Markers</h3>
+      <button class="modal-close" data-close-modal>&times;</button>
+    </div>
+    <div class="modal-sub">Requested by Sarah Kim (Facilities) · Request #REQ-1042</div>
+
+    <div class="field">
+      <label>Requested Quantity</label>
+      <input type="number" value="15" disabled />
+    </div>
+    <div class="field">
+      <label>Approved Quantity</label>
+      <input type="number" value="10" max="15" />
+      <div class="hint">Cannot exceed the requested quantity (15).</div>
+    </div>
+    <div class="field">
+      <label>Remarks (optional)</label>
+      <textarea placeholder="Reason for reducing, or any note for the storekeeper…"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-danger" data-close-modal>Reject</button>
+      <button class="btn btn-primary" data-close-modal>Approve</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-approve-3">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Review Item</h3>
+      <button class="modal-close" data-close-modal>&times;</button>
+    </div>
+    <div class="modal-sub">Same review form for every item — approved quantity is always capped at requested.</div>
+
+    <div class="field">
+      <label>Requested Quantity</label>
+      <input type="number" value="8" disabled />
+    </div>
+    <div class="field">
+      <label>Approved Quantity</label>
+      <input type="number" value="8" max="8" />
+    </div>
+    <div class="field">
+      <label>Remarks (optional)</label>
+      <textarea placeholder="Reason for reducing, or any note for the storekeeper…"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-danger" data-close-modal>Reject</button>
+      <button class="btn btn-primary" data-close-modal>Approve</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>
