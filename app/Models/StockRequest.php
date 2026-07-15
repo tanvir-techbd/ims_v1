@@ -38,6 +38,31 @@ class StockRequest extends Model
         return $this->hasMany(StockRequestItem::class);
     }
 
+    /**
+     * The only sanctioned way to add an item to a request — enforces the
+     * ordering-permission rule (PLAN.md §3a) server-side rather than relying
+     * on the Filament form to only offer permitted products. Mirrors the
+     * guarded-method pattern used by Product::recordStockIn() and
+     * StockRequestItem::approve()/issue().
+     */
+    public function addItem(Product $product, int $requestedQty): StockRequestItem
+    {
+        if ($requestedQty <= 0) {
+            throw new InventoryRuleException('Requested quantity must be greater than zero.');
+        }
+
+        if (! $this->requester->canOrderProduct($product)) {
+            throw new InventoryRuleException(
+                "\"{$product->name}\" is not orderable by {$this->requester->name} — it belongs to an item-group their user-group(s) aren't permitted for."
+            );
+        }
+
+        return $this->items()->create([
+            'product_id' => $product->id,
+            'requested_qty' => $requestedQty,
+        ]);
+    }
+
     public function cancel(): void
     {
         if ($this->status !== RequestStatus::Pending) {

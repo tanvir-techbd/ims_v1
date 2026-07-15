@@ -2,7 +2,7 @@
 
 Stack: Laravel 13 + Filament 3 + Filament Shield (roles/permissions) + Laravel Jetstream (Livewire stack, no Teams) + MySQL (via local LAMPP/XAMPP).
 
-Status: **Phases 0–2 complete** (environment/base install, static prototype, schema & models). Phase 3 (Filament CRUD resources) is next.
+Status: **Phases 0–2 complete** (environment/base install, static prototype, schema & models). **Extending Phase 2's schema** with a user-group / item-group ordering-permission layer (see §3a, added 2026-07-14 per new requirement), then continuing into Phase 3 (Filament CRUD resources).
 
 ---
 
@@ -19,6 +19,7 @@ Status: **Phases 0–2 complete** (environment/base install, static prototype, s
 | Reports | Daily / Monthly / Yearly reports, exported as **Excel/CSV**, plus on-screen Filament tables/widgets as the baseline view. |
 | Jetstream stack | Livewire (not Inertia), Teams **disabled**. |
 | Database | MySQL via LAMPP, database name `ims_v1`, root user, no password (local dev only — production `.env` will use real credentials). |
+| User groups & item groups | Added 2026-07-14. **Orthogonal to both Roles and Categories** — see §3a. Admin organizes Demanders (and any users) into **User Groups**; Admin organizes Products into **Item Groups** (a separate taxonomy from Categories, which remain the browsing/search classification). A User Group is granted permission to order from specific Item Groups; a Demander can only request products reachable through *some* Item Group their User Group(s) are permitted for. Both User↔UserGroup and Product↔ItemGroup are **many-to-many**. |
 
 ---
 
@@ -106,16 +107,64 @@ Standard `spatie/laravel-activitylog` table (to be migrated in the backend phase
 
 ---
 
+## 3a. User Groups & Item Groups (ordering-permission layer)
+
+Added 2026-07-14. This is a **second, independent classification/permission system**, layered on top of what already exists — it does not replace Roles (who can do what action) or Categories (how products are browsed/searched). It answers a narrower question: *which specific products can a given Demander request?*
+
+- **Roles** (`Admin`/`Approver`/`Storekeeper`/`Demander`/`Supplier`, via Shield) control what *actions* a user can perform in the system.
+- **Categories** are the browsing/search taxonomy every user sees (Stationery, PPE, Hygiene, …) — unchanged, still what "category-wise search with pagination" (§3a below) filters by.
+- **Item Groups** are a *separate* taxonomy on Products, used **only** to gate ordering permission. A product's category and its item-group(s) are independent — e.g. a product could be in category "Stationery" and item-group "Facilities-Orderable" simultaneously; the two classifications don't need to line up.
+- **User Groups** are how Admin organizes users (typically Demanders) for the purpose of granting item-group ordering permission — e.g. "Facilities Team", "IT Department". Not tied to Roles: a User Group is purely about which item-groups its members may order from.
+
+### Cardinality (confirmed)
+- `User` ↔ `UserGroup`: **many-to-many**. A demander's permitted item-groups are the **union** of permitted item-groups across all their user-groups.
+- `Product` ↔ `ItemGroup`: **many-to-many**. A product is orderable by a demander if *any* of the product's item-groups is in the demander's permitted set.
+- `UserGroup` ↔ `ItemGroup` (the permission grant itself): **many-to-many allow-list**. Presence of a row = permitted; absence = not permitted. No separate boolean — the pivot table's existence *is* the grant, which also gives a natural, auditable "who granted this and when" via `granted_by` + timestamps on that pivot.
+
+### Resolved defaults (not explicitly specified, chosen for sane rollout behavior — revisit if wrong)
+- **Unclassified products stay open.** A product with **zero** item-groups assigned is treated as unrestricted — orderable by any Demander — rather than unorderable by everyone. Rationale: the point of this feature is to *restrict* specific classified items to specific groups, not to silently lock ordering for every product an Admin hasn't gotten around to classifying yet. Once a product is put into at least one item-group, only demanders with a permitted path to that group can order it.
+- **Ungrouped demanders have no restricted-item access.** A Demander in zero user-groups can still order any *unclassified* product (per the rule above) but cannot order anything gated behind an item-group, since they have no permitted set to draw from.
+- **Admin bypasses this layer entirely**, consistent with `Admin` already bypassing all Shield permission checks as `super_admin` — an Admin can always add any product to a request regardless of item-group.
+- **Approvers/Storekeepers/Suppliers are unaffected** — this restriction only gates the *Demander's* product picker when creating a request (and, per the new requirement, the Demander's product browse/search view). It has no bearing on who can approve, issue, or view inventory.
+
+### Tables
+
+**item_groups**
+`id, name, slug (unique), description, timestamps`
+
+**user_groups**
+`id, name, description, timestamps`
+
+**item_group_product** (pivot — product's item-group memberships)
+`item_group_id (FK), product_id (FK), timestamps`
+
+**user_user_group** (pivot — user's group memberships)
+`user_id (FK), user_group_id (FK), timestamps`
+
+**item_group_user_group** (pivot — the permission grant itself; existence = allowed)
+`item_group_id (FK), user_group_id (FK), granted_by (nullable FK users), timestamps`
+
+### Backend enforcement
+
+`StockRequest::addItem(Product $product, int $requestedQty)` is the **only sanctioned way** to add an item to a request (mirrors how stock changes only go through `recordStockIn`/`recordStockOut`). It calls `$this->requester->canOrderProduct($product)` and throws `InventoryRuleException` if not permitted — enforced in the backend, not just by hiding options in the Filament product picker. `User::canOrderProduct()` implements the bypass/union/open-if-unclassified logic above.
+
+### Demander product browsing (new requirement, not previously in this plan)
+
+Demanders search/browse products **category-wise, paginated** — this was already implicitly supported by a standard Filament table (category filter + search + pagination are Filament table features, not custom-built). What's new: for a Demander specifically, the product list (both the browse view and the "add item" picker on the request form) is additionally scoped to products they're permitted to order (per `canOrderProduct()` above) — Admin/Approver/Storekeeper/Supplier continue to see the full catalog.
+
+---
+
 ## 4. Roles & permissions matrix
 
 | Capability | Admin | Approver | Storekeeper | Demander | Supplier |
 |---|:---:|:---:|:---:|:---:|:---:|
 | Manage users/roles/permissions | ✅ | – | – | – | – |
 | Manage categories/units | ✅ | – | – | – | – |
-| View products & stock levels | ✅ | ✅ | ✅ | ✅ | ✅ (read-only) |
+| Manage user-groups & item-groups (ordering permissions) | ✅ | – | – | – | – |
+| View products & stock levels | ✅ | ✅ | ✅ | ✅ (scoped, see §3a) | ✅ (read-only) |
 | Create/edit products | ✅ | – | – | – | – |
 | Record stock-in | ✅ | – | ✅ | – | – |
-| Create stock request | ✅ | – | – | ✅ | – |
+| Create stock request | ✅ | – | – | ✅ (only for products their user-group(s) permit — §3a) | – |
 | View own requests | ✅ | ✅ | ✅ | ✅ (own only) | – |
 | Approve/reject request items | ✅ | ✅ | – | – | – |
 | Issue approved items | ✅ | – | ✅ | – | – |
@@ -131,8 +180,8 @@ Standard `spatie/laravel-activitylog` table (to be migrated in the backend phase
 
 - **Phase 0 — Environment & base install** ✅ done (this session)
 - **Phase 1 — Static prototype** (next, pending your approval): plain HTML/CSS pages in `static_prototype/` for the key screens (login, dashboard per role, product catalog, request form, approval queue, issuance screen, stock alerts, reports). No backend logic — just layout/UX to agree on before wiring up Filament.
-- **Phase 2 — Schema & models**: migrations + Eloquent models for Category, Unit, Product, StockMovement, StockRequest, StockRequestItem, RequestApproval, StockIssuance, Setting; model factories + tests for the business rules in §3.
-- **Phase 3 — Filament resources (CRUD)**: CategoryResource, UnitResource, ProductResource (with stock-in action), UserResource (role assignment).
+- **Phase 2 — Schema & models**: migrations + Eloquent models for Category, Unit, Product, StockMovement, StockRequest, StockRequestItem, RequestApproval, StockIssuance, Setting; model factories + tests for the business rules in §3. ✅ done, **extended** 2026-07-14 with ItemGroup, UserGroup, and their 3 pivot tables + `User::canOrderProduct()` / `StockRequest::addItem()` (§3a).
+- **Phase 3 — Filament resources (CRUD)**: CategoryResource, UnitResource, ProductResource (with stock-in action), UserGroupResource (members + permitted item-groups), ItemGroupResource (products), UserResource (role + user-group assignment).
 - **Phase 4 — Request workflow**: StockRequestResource with item relation manager, submit/approve/reject/issue actions, status transitions, notifications.
 - **Phase 5 — Alerts**: low-stock Filament widget + dedicated "Stock Alerts" page, system Setting for the threshold.
 - **Phase 6 — Reports**: Daily/Monthly/Yearly report pages with date-range filters, Excel/CSV export via `pxlrbt/filament-excel`.
@@ -230,6 +279,25 @@ php artisan make:model StockIssuance -f
 # usual :memory: sqlite default — see config/database.php's extra
 # 'mysql_lock_test' connection too, used only by the row-lock test)
 /opt/lampp/bin/mysql -u root -e "CREATE DATABASE IF NOT EXISTS ims_v1_testing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+php artisan migrate:fresh --seed
+php artisan test
+```
+
+### Phase 2 extension (2026-07-14) — User Groups & Item Groups (§3a)
+
+```bash
+php artisan make:migration create_item_groups_table
+php artisan make:migration create_user_groups_table
+php artisan make:migration create_item_group_product_table
+php artisan make:migration create_user_user_group_table
+php artisan make:migration create_item_group_user_group_table
+# (item_group_product renamed to a later timestamp — same FK-ordering
+# gotcha as Phase 2: it depends on item_groups but was generated with a
+# timestamp that sorted before it)
+
+php artisan make:model ItemGroup -f
+php artisan make:model UserGroup -f
 
 php artisan migrate:fresh --seed
 php artisan test

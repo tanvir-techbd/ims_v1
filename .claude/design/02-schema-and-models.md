@@ -27,3 +27,18 @@ Status: **done** (2026-07-14). Full table definitions and business rules are in 
 - Factories exist for every model above with sensible defaults.
 - Feature tests (`tests/Feature/InventoryWorkflowTest.php`, 9 tests) cover: approval cannot exceed requested qty; issuance cannot exceed approved qty; issuance is capped by actual stock and item goes `partially_issued`; full happy path through to `issued`; rejecting an item after it's had stock issued is blocked; sequential issuances never oversell; stock-in increases `current_stock` and logs a movement.
 - Concurrency: `tests/Feature/ConcurrentIssuanceLockTest.php` proves `lockForUpdate()` is a real MySQL row lock (a second live connection holding the lock causes the main connection's `issue()` call to fail with a lock-wait-timeout rather than silently overselling). This test intentionally skips `RefreshDatabase` — see the class docblock for why — and cleans up its own rows in `tearDown()`.
+
+## Addendum (2026-07-14): User Groups & Item Groups
+
+New requirement, added after Phase 2 was otherwise complete — full rationale and resolved defaults are in `PLAN.md` §3a, not repeated here.
+
+Additional migrations (both many-to-many, so no new columns on `products`/`users` — pivot tables only):
+- `item_groups` (`id, name, slug, description, timestamps`)
+- `user_groups` (`id, name, description, timestamps`)
+- `item_group_product` (pivot)
+- `user_user_group` (pivot)
+- `item_group_user_group` (pivot — the permission grant; existence = allowed; has `granted_by` + timestamps for auditability)
+
+Additional models: `ItemGroup`, `UserGroup`. Additional relations: `Product::itemGroups()`, `User::userGroups()`. Additional methods: `User::canOrderProduct(Product $product): bool` (bypass for Admin, union-of-groups check, open if product has zero item-groups) and `StockRequest::addItem(Product $product, int $requestedQty): StockRequestItem` — the sanctioned, permission-checked way to add an item to a request, mirroring the `recordStockIn`/`recordStockOut` / `approve`/`reject`/`issue` pattern already established.
+
+Factories: `ItemGroupFactory`, `UserGroupFactory`. Tests: `tests/Feature/ItemGroupOrderingPermissionTest.php` covering the union-across-groups rule, the open-if-unclassified default, the Admin bypass, and the `addItem()` guard throwing `InventoryRuleException` for a denied product.

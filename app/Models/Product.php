@@ -7,6 +7,7 @@ use App\Exceptions\InventoryRuleException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -51,6 +52,16 @@ class Product extends Model
     public function requestItems(): HasMany
     {
         return $this->hasMany(StockRequestItem::class);
+    }
+
+    /**
+     * Permission-scoping classification, separate from category — see
+     * PLAN.md §3a. A product with no item-groups is unrestricted (orderable
+     * by any demander); see User::canOrderProduct().
+     */
+    public function itemGroups(): BelongsToMany
+    {
+        return $this->belongsToMany(ItemGroup::class, 'item_group_product');
     }
 
     public function isLowStock(): bool

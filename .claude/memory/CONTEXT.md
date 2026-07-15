@@ -6,6 +6,22 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
+## 2026-07-14 — Session 1 (continued): User Groups / Item Groups added (extends Phase 2)
+
+**New requirement from the user, mid-session, after Phase 2 was already complete:** Demanders should be organizable into user-groups by Admin, and those groups can be granted/denied permission to order from specific item-groups — explicitly **not** the same thing as product categories (categories stay the browsing/search taxonomy; item-groups exist only to gate ordering). Full design is in `PLAN.md` §3a — read that before touching this feature again, don't re-derive it from the code.
+
+**Cardinality, confirmed with the user:** both `User↔UserGroup` and `Product↔ItemGroup` are many-to-many (not the simpler one-to-many I'd have defaulted to). A user's permitted item-groups = union across all their groups. `UserGroup↔ItemGroup` (the actual permission grant) is a many-to-many allow-list — row exists = permitted, no separate boolean.
+
+**Resolved defaults I chose (not asked, but flagged as reversible in PLAN.md §3a):** a product with zero item-groups is unrestricted (open to all demanders) rather than locked to none — otherwise every unclassified product would be unorderable by default, which seemed like a bad rollout experience. Admin bypasses this layer entirely, same as it bypasses Shield permissions.
+
+**What's built:** migrations for `item_groups`, `user_groups`, and 3 pivot tables (`item_group_product`, `user_user_group`, `item_group_user_group` — the last one carries `granted_by` + timestamps for auditability). Models `ItemGroup`, `UserGroup`, plus `Product::itemGroups()`, `User::userGroups()`, `User::permittedItemGroupIds()`, `User::canOrderProduct()`. `StockRequest::addItem()` is now the sanctioned way to add items to a request — it's the enforcement point, following the same guarded-method pattern as `approve()`/`issue()`/`recordStockIn()`. 7 new feature tests in `tests/Feature/ItemGroupOrderingPermissionTest.php`, full suite (49 tests, 42 passed + 7 pre-existing Jetstream skips) green.
+
+**Same migration-ordering gotcha as Phase 2, again:** `create_item_group_product_table` got a timestamp that alphabetically sorted before `create_item_groups_table` despite depending on it — renamed it to a later timestamp before running. Worth just expecting this every time and checking `ls database/migrations | sort` after any batch of `make:migration` calls, rather than being surprised by it again.
+
+**Not done yet:** the Filament-layer enforcement (ProductResource scoping for Demanders, the request-form product picker filtering, UserGroupResource/ItemGroupResource UI) — that's Phase 3, in progress next in this same session.
+
+---
+
 ## 2026-07-14 — Session 1 (continued): Phase 2 (schema & models) COMPLETE
 
 **Phase 2 is done** per `.claude/design/02-schema-and-models.md`. All 9 domain tables migrated (categories, units, products, settings, stock_requests, stock_request_items, request_approvals, stock_movements, stock_issuances), all 9 Eloquent models + factories written, 4 backed enums in `app/Enums/`. 10 feature tests across two files, all passing.

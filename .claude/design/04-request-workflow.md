@@ -4,7 +4,8 @@ Status: **not started**. This is the core of the system — take it slow and tes
 
 ## `StockRequestResource`
 
-- Demander-facing create form: multi-item (repeater: product select + requested_qty), notes field.
+- Demander-facing create form: multi-item (repeater: product select + requested_qty), notes field. The product select must only offer products the demander is permitted to order (§3a in PLAN.md) — filter the select's options query, don't just rely on the backend guard to reject after the fact (though the backend guard is still required, see below).
+- Items are added via `StockRequest::addItem(Product $product, int $requestedQty)` (added in the Phase 2 extension for §3a) — never create `StockRequestItem` rows directly from the Filament form; this is what actually enforces the ordering-permission rule server-side, catch its `InventoryRuleException` and surface the message.
 - Table: requester, item count, overall status badge, created_at. Demanders see only their own (scope by `requester_id` when not Admin/Approver/Storekeeper).
 - Detail/relation manager showing each `StockRequestItem` with its full trail (`request_approvals` + `stock_issuances`) inline — this is the "fully trackable" requirement, make it visually obvious who did what and when.
 
