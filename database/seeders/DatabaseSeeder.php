@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RoleSeeder::class);
+        $this->call(PermissionSeeder::class);
 
         // Default global low-stock threshold — see PLAN.md §8, admin-editable in Phase 5.
         Setting::set('low_stock_threshold', 10);

@@ -23,7 +23,14 @@ return [
     'super_admin' => [
         'enabled' => true,
         'name' => 'Admin',
-        'define_via_gate' => false,
+        // true = a real Gate::before() bypass keyed on hasRole('Admin'),
+        // independent of whatever permissions happen to exist in the DB.
+        // false (Shield's default) instead physically attaches every
+        // shield:generate'd permission to the Admin role's DB row, which
+        // silently breaks on any fresh database that hasn't had
+        // shield:generate re-run (e.g. the test DB) — not worth the
+        // fragility for what's supposed to be an unconditional bypass.
+        'define_via_gate' => true,
         'intercept_gate' => 'before', // after
     ],
 

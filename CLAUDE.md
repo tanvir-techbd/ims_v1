@@ -24,21 +24,24 @@ Inventory Management System for a single organization (one deployment per org, n
 
 ## Conventions for this project
 
-- `Admin` role = Filament Shield's `super_admin` (configured in `config/filament-shield.php`) — bypasses all permission checks. Don't create a separate `super_admin` role.
-- Business rules (approval ≤ requested, issuance ≤ approved ≤ stock) must be enforced in backend actions/transactions, not just Filament form validation — see PLAN.md §3.
-- Stock changes always go through `StockMovement` (append-only ledger). Never mutate `products.current_stock` directly outside of that flow.
+- `Admin` role = Filament Shield's `super_admin` (configured in `config/filament-shield.php`) — bypasses all permission checks via a real `Gate::before()` (`define_via_gate` is set to `true`, **not** Shield's own default of `false`). Don't create a separate `super_admin` role, and don't revert `define_via_gate` — see the comment in that config file for why the default is actively wrong for this project (it ties Admin's bypass to whichever permissions happened to exist in the DB at the last `shield:generate`, which silently breaks on any fresh database — including the test DB — that hasn't had it re-run).
+- `User` **must** implement `Filament\Models\Contracts\FilamentUser` with `canAccessPanel()` — without it, Filament denies panel access to everyone whenever `APP_ENV !== 'local'` (so it looked fine manually in dev and then failed for literally every user in production/testing). Current implementation: any user with at least one role can access the panel.
+- Business rules (approval ≤ requested, issuance ≤ approved ≤ stock, item-group ordering permission) must be enforced in backend actions/transactions, not just Filament form validation — see PLAN.md §3 and §3a.
+- Stock changes always go through `StockMovement` (append-only ledger). Never mutate `products.current_stock` directly outside of that flow — the `current_stock` field is disabled in `ProductResource`'s edit form for the same reason.
 - Low-stock threshold is a single **global** setting (not per-product) — a deliberate, documented trade-off (see PLAN.md §1).
 - Suppliers are read-only. They never create stock-in entries.
 - No `Organization` model — this codebase is redeployed fresh per organization.
+- **Item Groups are not Categories** (PLAN.md §3a) — Category is the browsing/search taxonomy; Item Group exists only to gate which User Groups may order a product. Don't merge these into one concept.
 - Full audit trail requirement is met two ways: (1) domain tables are append-only where it matters (`request_approvals`, `stock_issuances`, `stock_movements`), and (2) `spatie/laravel-activitylog` (Phase 7) provides a general-purpose changelog across all models.
+- After `php artisan migrate:fresh`, permissions are gone until you re-run `php artisan shield:generate --panel=admin --all` — it writes directly to the DB, not via migration. Run it **before** `db:seed`, since `PermissionSeeder` assigns roles against permissions it expects to already exist. Order: `migrate:fresh` → `shield:generate` → `db:seed`.
 
 ## Key commands
 
 ```bash
 php artisan serve                 # dev server
-php artisan migrate               # run migrations
-php artisan db:seed               # seed roles + admin user (admin@example.com)
-php artisan shield:generate --panel=admin --resource=all   # regenerate Shield permissions after adding a new Filament resource
+php artisan migrate:fresh         # rebuild schema
+php artisan shield:generate --panel=admin --all   # regenerate Shield permissions/policies (run before db:seed!)
+php artisan db:seed               # seed roles, custom permissions, admin user (admin@example.com), settings
 npm run dev                       # vite dev (Filament/Jetstream assets)
 ```
 

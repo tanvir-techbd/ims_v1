@@ -1,6 +1,6 @@
 # Phase 3 — Filament CRUD Resources
 
-Status: **in progress** (2026-07-14).
+Status: **done** (2026-07-14). See `.claude/memory/CONTEXT.md` for the two bugs caught during this phase (`FilamentUser::canAccessPanel()` missing, Shield's `define_via_gate` default) — both were real production-breaking bugs, not test artifacts, and are now documented in `CLAUDE.md` so they don't get "fixed" back to the broken default later.
 
 ## Resources
 

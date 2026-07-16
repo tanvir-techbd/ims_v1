@@ -2,7 +2,7 @@
 
 Stack: Laravel 13 + Filament 3 + Filament Shield (roles/permissions) + Laravel Jetstream (Livewire stack, no Teams) + MySQL (via local LAMPP/XAMPP).
 
-Status: **Phases 0–2 complete** (environment/base install, static prototype, schema & models). **Extending Phase 2's schema** with a user-group / item-group ordering-permission layer (see §3a, added 2026-07-14 per new requirement), then continuing into Phase 3 (Filament CRUD resources).
+Status: **Phases 0–3 complete**, including the user-group / item-group ordering-permission layer (§3a, added 2026-07-14). Phase 4 (request → approval → issuance workflow UI) is next.
 
 ---
 
@@ -172,7 +172,7 @@ Demanders search/browse products **category-wise, paginated** — this was alrea
 | View/export reports | ✅ | ✅ | ✅ | – | – |
 | View audit log | ✅ | – | – | – | – |
 
-`Admin` = Shield `super_admin`, so it always passes every gate regardless of this table. All other rows are enforced via Shield-generated resource permissions plus four custom permissions: `approve_request`, `issue_request`, `record_stock_in`, `view_reports`.
+`Admin` = Shield `super_admin`, so it always passes every gate regardless of this table — via a real `Gate::before()` bypass (`config/filament-shield.php`'s `super_admin.define_via_gate` is set to `true`; Shield's own default of `false` instead physically attaches every permission to the Admin role's DB row at `shield:generate` time, which breaks on any fresh database that hasn't had it re-run — not what "Admin bypasses everything" should mean). All other rows are enforced via Shield-generated resource permissions plus four custom permissions seeded by `PermissionSeeder`: `approve_request`, `issue_request`, `record_stock_in`, `view_reports`.
 
 ---
 
@@ -181,7 +181,7 @@ Demanders search/browse products **category-wise, paginated** — this was alrea
 - **Phase 0 — Environment & base install** ✅ done (this session)
 - **Phase 1 — Static prototype** (next, pending your approval): plain HTML/CSS pages in `static_prototype/` for the key screens (login, dashboard per role, product catalog, request form, approval queue, issuance screen, stock alerts, reports). No backend logic — just layout/UX to agree on before wiring up Filament.
 - **Phase 2 — Schema & models**: migrations + Eloquent models for Category, Unit, Product, StockMovement, StockRequest, StockRequestItem, RequestApproval, StockIssuance, Setting; model factories + tests for the business rules in §3. ✅ done, **extended** 2026-07-14 with ItemGroup, UserGroup, and their 3 pivot tables + `User::canOrderProduct()` / `StockRequest::addItem()` (§3a).
-- **Phase 3 — Filament resources (CRUD)**: CategoryResource, UnitResource, ProductResource (with stock-in action), UserGroupResource (members + permitted item-groups), ItemGroupResource (products), UserResource (role + user-group assignment).
+- **Phase 3 — Filament resources (CRUD)**: CategoryResource, UnitResource, ProductResource (with stock-in action), UserGroupResource (members + permitted item-groups), ItemGroupResource (products), UserResource (role + user-group assignment). ✅ done 2026-07-14 — see `.claude/design/03-filament-resources.md` for what shipped and two important bugs caught/fixed along the way (`User::canAccessPanel()` was missing entirely, and Shield's `define_via_gate: false` default made the Admin bypass fragile).
 - **Phase 4 — Request workflow**: StockRequestResource with item relation manager, submit/approve/reject/issue actions, status transitions, notifications.
 - **Phase 5 — Alerts**: low-stock Filament widget + dedicated "Stock Alerts" page, system Setting for the threshold.
 - **Phase 6 — Reports**: Daily/Monthly/Yearly report pages with date-range filters, Excel/CSV export via `pxlrbt/filament-excel`.
@@ -302,6 +302,37 @@ php artisan make:model UserGroup -f
 php artisan migrate:fresh --seed
 php artisan test
 ```
+
+### Phase 3 (2026-07-14) — Filament CRUD resources
+
+```bash
+php artisan make:filament-resource Category --generate
+php artisan make:filament-resource Unit --generate
+php artisan make:filament-resource ItemGroup --generate
+php artisan make:filament-resource UserGroup --generate
+php artisan make:filament-resource Product --generate
+php artisan make:filament-resource User --generate
+# (each --generate scaffold was then substantially rewritten by hand —
+# auto-inferred forms exposed raw internals like two_factor_secret and
+# current_team_id on User, and none of them had the item-group scoping,
+# stock-in action, or auto-slug behavior this project needs)
+
+php artisan shield:generate --panel=admin --all
+# generates Policies (app/Policies/) + CRUD permission rows per resource
+
+php artisan make:seeder PermissionSeeder
+# custom action permissions (approve_request, issue_request,
+# record_stock_in, view_reports) + role assignments per §4's matrix
+
+# Correct order matters: shield:generate must run before db:seed, since
+# PermissionSeeder assigns roles against permissions it expects to exist:
+php artisan migrate:fresh
+php artisan shield:generate --panel=admin --all
+php artisan db:seed
+php artisan test
+```
+
+Two bugs were caught here that would otherwise have surfaced in production, not just tests — both now documented in `CLAUDE.md` "Conventions": (1) `User` didn't implement `FilamentUser::canAccessPanel()`, which silently denies *everyone* once `APP_ENV !== 'local'`; (2) Shield's `super_admin.define_via_gate` default of `false` doesn't give Admin a real bypass, it just attaches every currently-known permission to the Admin role at `shield:generate` time — fragile and wrong for "Admin bypasses everything." Both fixed; see `.claude/memory/CONTEXT.md` for the debugging trail if this area needs touching again.
 
 Commands for the next phases will be added to this section as they're run.
 
