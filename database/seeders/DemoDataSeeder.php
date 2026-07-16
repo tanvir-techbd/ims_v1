@@ -8,7 +8,6 @@ use App\Models\Product;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\UserGroup;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,11 +21,19 @@ use Illuminate\Support\Facades\Hash;
  *
  * Requires DatabaseSeeder to have already run (roles must exist). Every
  * demo user's password is "password".
+ *
+ * Deliberately does NOT use WithoutModelEvents (Laravel's make:seeder
+ * scaffolds it on by default) — this seeder's whole point is a populated,
+ * walkthrough-ready demo, and that trait silences every Eloquent model
+ * event for its entire run, including the ones spatie/laravel-activitylog
+ * hooks into. With it on, every product/category/request/approval this
+ * seeder creates was invisible to the Phase 7 Audit Log — found via a real
+ * browser walkthrough (it showed "No Activities" despite dozens of rows
+ * having just been created), not something any automated test caught,
+ * since none of them seed through this class and then assert on the log.
  */
 class DemoDataSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     public function run(): void
     {
         [$categories, $units] = $this->seedCategoriesAndUnits();

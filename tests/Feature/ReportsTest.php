@@ -3,8 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Pages\Reports;
-use App\Filament\Widgets\ProductsIssuedReportWidget;
-use App\Filament\Widgets\UserActivityReportWidget;
+use App\Filament\Pages\UserActivityReport as UserActivityReportPage;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\StockIssuance;
@@ -153,15 +152,14 @@ class ReportsTest extends TestCase
         $this->actingAs($demander)->get(Reports::getUrl())->assertForbidden();
     }
 
-    public function test_products_issued_widget_renders_and_reacts_to_the_period_filter(): void
+    public function test_products_issued_report_page_renders_and_reacts_to_the_period_filter(): void
     {
         $approver = $this->approver();
         $this->issuanceOn('2026-07-16 10:00:00', qty: 9);
 
         Livewire::actingAs($approver)
-            ->test(ProductsIssuedReportWidget::class, [
-                'filters' => ['period' => 'daily', 'reference_date' => '2026-07-16'],
-            ])
+            ->test(Reports::class)
+            ->filterTable('period', ['period' => 'daily', 'reference_date' => '2026-07-16'])
             ->assertSuccessful()
             ->assertSee('9');
     }
@@ -172,21 +170,18 @@ class ReportsTest extends TestCase
         $this->issuanceOn('2026-07-16 10:00:00', qty: 9);
 
         Livewire::actingAs($approver)
-            ->test(ProductsIssuedReportWidget::class, [
-                'filters' => ['period' => 'daily', 'reference_date' => '2026-07-16'],
-            ])
+            ->test(Reports::class)
+            ->filterTable('period', ['period' => 'daily', 'reference_date' => '2026-07-16'])
             ->callTableAction('export')
             ->assertFileDownloaded('products-issued-2026-07-16-to-2026-07-16.csv');
     }
 
-    public function test_user_activity_widget_renders(): void
+    public function test_user_activity_report_page_renders(): void
     {
         $approver = $this->approver();
 
         Livewire::actingAs($approver)
-            ->test(UserActivityReportWidget::class, [
-                'filters' => ['period' => 'daily', 'reference_date' => now()->toDateString()],
-            ])
+            ->test(UserActivityReportPage::class)
             ->assertSuccessful();
     }
 }

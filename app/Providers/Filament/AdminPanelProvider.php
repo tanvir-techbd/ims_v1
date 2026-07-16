@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\LowStockWidget;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -30,6 +31,12 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->colors([
                 'primary' => Color::Emerald,
+                // RequestStatus/RequestItemStatus use 'purple' for the
+                // partial states (PartiallyApproved/PartiallyIssued) —
+                // not one of Filament's built-in semantic colors
+                // (primary/success/warning/danger/info/gray), so it must
+                // be registered here or badges silently render unstyled.
+                'purple' => Color::Purple,
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
@@ -39,10 +46,15 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            // Deliberately NOT using discoverWidgets(): it auto-registers every
+            // widget class in app/Filament/Widgets onto the main Dashboard,
+            // which pulled ProductsIssuedReportWidget and UserActivityReportWidget
+            // (meant only for the Reports page, reacting to its period filter)
+            // onto the Dashboard too, unfiltered. List Dashboard widgets explicitly.
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                LowStockWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
