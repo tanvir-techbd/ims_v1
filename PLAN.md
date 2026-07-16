@@ -2,7 +2,7 @@
 
 Stack: Laravel 13 + Filament 3 + Filament Shield (roles/permissions) + Laravel Jetstream (Livewire stack, no Teams) + MySQL (via local LAMPP/XAMPP).
 
-Status: **Phases 0–4 complete**, including the user-group / item-group ordering-permission layer (§3a, added 2026-07-14). Phase 5 (low-stock alerts UI) is next.
+Status: **Phases 0–5 complete**, including the user-group / item-group ordering-permission layer (§3a, added 2026-07-14). Phase 6 (reports) is next.
 
 ---
 
@@ -183,7 +183,7 @@ Demanders search/browse products **category-wise, paginated** — this was alrea
 - **Phase 2 — Schema & models**: migrations + Eloquent models for Category, Unit, Product, StockMovement, StockRequest, StockRequestItem, RequestApproval, StockIssuance, Setting; model factories + tests for the business rules in §3. ✅ done, **extended** 2026-07-14 with ItemGroup, UserGroup, and their 3 pivot tables + `User::canOrderProduct()` / `StockRequest::addItem()` (§3a).
 - **Phase 3 — Filament resources (CRUD)**: CategoryResource, UnitResource, ProductResource (with stock-in action), UserGroupResource (members + permitted item-groups), ItemGroupResource (products), UserResource (role + user-group assignment). ✅ done 2026-07-14 — see `.claude/design/03-filament-resources.md` for what shipped and two important bugs caught/fixed along the way (`User::canAccessPanel()` was missing entirely, and Shield's `define_via_gate: false` default made the Admin bypass fragile).
 - **Phase 4 — Request workflow**: StockRequestResource with item relation manager, submit/approve/reject/issue actions, status transitions, notifications. ✅ done 2026-07-16 — see `.claude/design/04-request-workflow.md` for what shipped vs. the original sketch.
-- **Phase 5 — Alerts**: low-stock Filament widget + dedicated "Stock Alerts" page, system Setting for the threshold.
+- **Phase 5 — Alerts**: low-stock Filament widget + dedicated "Stock Alerts" page, system Setting for the threshold. ✅ done 2026-07-16.
 - **Phase 6 — Reports**: Daily/Monthly/Yearly report pages with date-range filters, Excel/CSV export via `pxlrbt/filament-excel`.
 - **Phase 7 — Audit log**: `spatie/laravel-activitylog` wired into all domain models + a Filament page to browse/search the log.
 - **Phase 8 — Search & polish**: global search across products/requests/users, table filters, UI pass, seed demo data, final permission review per role.
@@ -355,6 +355,32 @@ php artisan shield:generate --panel=admin --all
 # PermissionSeeder extended in place (not a new seeder) to grant
 # view_any_stock::request / view_stock::request to Approver, Storekeeper,
 # Demander, and create_stock::request to Demander only
+
+php artisan migrate:fresh
+php artisan shield:generate --panel=admin --all
+php artisan db:seed
+php artisan test
+```
+
+### Phase 5 (2026-07-16) — Low-stock alerts
+
+```bash
+php artisan make:filament-page Settings
+php artisan make:filament-page StockAlerts
+php artisan make:filament-widget LowStockWidget --table --panel=admin
+# --panel=admin was required here — without it the widget generator
+# hit a NonInteractiveValidationException even with --no-interaction
+
+php artisan shield:generate --panel=admin --all
+# auto-generated a widget_LowStockWidget permission even though nothing
+# uses it — Shield's widget-permission generation is on by default
+# (unlike pages, which need an opt-in trait), but this widget's
+# visibility is actually gated by a plain custom permission check
+# (view_stock_alerts) in canView(), so that generated permission just
+# sits there unused. Harmless, not worth suppressing.
+
+# PermissionSeeder extended again: added view_stock_alerts, granted to
+# Approver/Storekeeper/Supplier per §4's matrix (not Demander)
 
 php artisan migrate:fresh
 php artisan shield:generate --panel=admin --all

@@ -23,6 +23,7 @@ class PermissionSeeder extends Seeder
         'issue_request',
         'record_stock_in',
         'view_reports',
+        'view_stock_alerts',
     ];
 
     /**
@@ -40,13 +41,13 @@ class PermissionSeeder extends Seeder
         $this->assignRolePermissions('Approver', [
             'view_any_product', 'view_product',
             'view_any_stock::request', 'view_stock::request',
-            'approve_request', 'view_reports',
+            'approve_request', 'view_reports', 'view_stock_alerts',
         ]);
 
         $this->assignRolePermissions('Storekeeper', [
             'view_any_product', 'view_product',
             'view_any_stock::request', 'view_stock::request',
-            'record_stock_in', 'issue_request', 'view_reports',
+            'record_stock_in', 'issue_request', 'view_reports', 'view_stock_alerts',
         ]);
 
         $this->assignRolePermissions('Demander', [
@@ -55,7 +56,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         $this->assignRolePermissions('Supplier', [
-            'view_any_product', 'view_product',
+            'view_any_product', 'view_product', 'view_stock_alerts',
         ]);
     }
 

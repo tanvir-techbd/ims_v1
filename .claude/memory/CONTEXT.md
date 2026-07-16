@@ -6,6 +6,22 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
+## 2026-07-16 — Session 1 (continued): Phase 5 (low-stock alerts) COMPLETE
+
+**Built:** `App\Filament\Pages\StockAlerts` (dedicated nav page, full searchable/paginated/sortable table of products at or below the threshold), `App\Filament\Widgets\LowStockWidget` (compact dashboard version, unpaginated, top of the "Access Control"... actually dashboard-level, not nav-grouped since widgets don't take a navigation group), and `App\Filament\Pages\Settings` (single numeric field for `low_stock_threshold`, the only system setting that exists right now — deliberately a lightweight custom page rather than a full Settings resource, revisit only if more settings get added later).
+
+**Permission model:** both the widget and the page are gated by a plain custom permission `view_stock_alerts` (`Auth::user()->can('view_stock_alerts')` in `canView()`/`canAccess()`), granted to Approver/Storekeeper/Supplier per `PLAN.md` §4's matrix — explicitly *not* Demander (matrix has "–" there). `Settings::canAccess()` uses a direct `hasRole('Admin')` check instead of a permission, since nothing else will ever be granted access to it and a dedicated permission would be pure ceremony.
+
+**Shield quirk noticed, not acted on:** `shield:generate` auto-creates a `widget_LowStockWidget` permission for any discovered widget (widget-permission generation is on by default, unlike pages which need an opt-in `HasPageShield` trait) — but since `LowStockWidget` doesn't use that trait and is gated by the custom `view_stock_alerts` check instead, that generated permission is just dead weight sitting in the `permissions` table. Harmless; not worth the config surgery to suppress it.
+
+**Skipped deliberately:** the "optional stretch" from the design doc — a database notification pushed to Admin/Storekeeper the instant a stock movement crosses the threshold. It's explicitly optional in the design doc and nothing in the original requirements asked for push-on-cross behavior specifically (just "trigger an alert or display it in a dedicated alert list," which the page + widget satisfy). Not built; revisit only if asked.
+
+**Tests:** `tests/Feature/StockAlertsAndSettingsTest.php` (6 tests) — alerts page shows/hides products correctly at the exact threshold boundary (`<=` not `<`, tested explicitly), changing the threshold live-updates what appears (no caching bug), Demander is forbidden from the alerts page, Admin can update the threshold, non-Admin is forbidden from Settings, and the dashboard actually renders for a non-admin permitted role (not just Admin, whose Gate bypass could otherwise mask a real widget bug). Full suite: 67 tests, 60 passed, 7 pre-existing Jetstream skips, 0 failures.
+
+**Not done yet:** Phase 6 (Daily/Monthly/Yearly reports with Excel/CSV export via `pxlrbt/filament-excel` — not yet installed).
+
+---
+
 ## 2026-07-16 — Session 1 (continued): Phase 4 (request → approval → issuance UI) COMPLETE
 
 **Built:** `StockRequestResource` — Create page (notes + a repeater of product/qty rows) and a View page (Filament Infolist for the request header + `ItemsRelationManager` for the itemized workflow). No Edit page at all: once submitted, a request's items only change through the guarded Approve/Reject/Issue actions, never a raw form — deliberately, matches the "rejected items are terminal" one-directional status philosophy already established in Phase 2.

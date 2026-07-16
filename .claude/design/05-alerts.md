@@ -1,6 +1,6 @@
 # Phase 5 — Low-Stock Alerts
 
-Status: **not started**.
+Status: **done** (2026-07-16), except the optional stretch notification (not built — see `.claude/memory/CONTEXT.md` for why). See that file for what actually shipped.
 
 ## Setting
 
