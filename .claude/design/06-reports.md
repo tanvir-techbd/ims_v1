@@ -1,10 +1,10 @@
 # Phase 6 — Reports
 
-Status: **not started**.
+Status: **done** (2026-07-16), with one deviation from this doc's original plan — see `.claude/memory/CONTEXT.md` for the full reasoning.
 
-## Package
+## Package — changed from the original plan
 
-`pxlrbt/filament-excel` (thin Filament-native wrapper over `maatwebsite/excel`) for one-click Excel/CSV export straight from a Filament table's header/bulk actions.
+`pxlrbt/filament-excel` **could not be installed**: its Excel engine (`maatwebsite/excel` → `phpoffice/phpspreadsheet`) caps at PHP <8.5, and the only `filament-excel` majors that do support PHP 8.5 require Filament 4/5 (this project is on Filament 3.3). User confirmed: ship plain-PHP CSV export instead of blocking on a PHP downgrade. See `App\Support\Reports\CsvExport` — a small `fputcsv`-based streamer, no package. Revisit with the real package once the ecosystem catches up.
 
 ## Pages
 

@@ -2,7 +2,7 @@
 
 Stack: Laravel 13 + Filament 3 + Filament Shield (roles/permissions) + Laravel Jetstream (Livewire stack, no Teams) + MySQL (via local LAMPP/XAMPP).
 
-Status: **Phases 0–5 complete**, including the user-group / item-group ordering-permission layer (§3a, added 2026-07-14). Phase 6 (reports) is next.
+Status: **Phases 0–6 complete**, including the user-group / item-group ordering-permission layer (§3a, added 2026-07-14). Phase 7 (audit log) is next.
 
 ---
 
@@ -37,7 +37,8 @@ Status: **Phases 0–5 complete**, including the user-group / item-group orderin
 
 Remaining packages to add during backend implementation (not yet installed):
 - `spatie/laravel-activitylog` — full audit log of model changes (requests, approvals, issuances, stock movements, user/role changes)
-- `pxlrbt/filament-excel` — one-click Excel/CSV export straight from Filament tables (built on `maatwebsite/excel`), used for the Daily/Monthly/Yearly reports
+
+**Dropped:** `pxlrbt/filament-excel` — couldn't install (see §5/Phase 6 build notes below): its Excel engine caps at PHP <8.5, and the PHP-8.5-compatible `filament-excel` majors need Filament 4/5, not our 3.3. Reports export via plain-PHP CSV instead (`App\Support\Reports\CsvExport`).
 
 ---
 
@@ -184,7 +185,7 @@ Demanders search/browse products **category-wise, paginated** — this was alrea
 - **Phase 3 — Filament resources (CRUD)**: CategoryResource, UnitResource, ProductResource (with stock-in action), UserGroupResource (members + permitted item-groups), ItemGroupResource (products), UserResource (role + user-group assignment). ✅ done 2026-07-14 — see `.claude/design/03-filament-resources.md` for what shipped and two important bugs caught/fixed along the way (`User::canAccessPanel()` was missing entirely, and Shield's `define_via_gate: false` default made the Admin bypass fragile).
 - **Phase 4 — Request workflow**: StockRequestResource with item relation manager, submit/approve/reject/issue actions, status transitions, notifications. ✅ done 2026-07-16 — see `.claude/design/04-request-workflow.md` for what shipped vs. the original sketch.
 - **Phase 5 — Alerts**: low-stock Filament widget + dedicated "Stock Alerts" page, system Setting for the threshold. ✅ done 2026-07-16.
-- **Phase 6 — Reports**: Daily/Monthly/Yearly report pages with date-range filters, Excel/CSV export via `pxlrbt/filament-excel`.
+- **Phase 6 — Reports**: Daily/Monthly/Yearly report pages with date-range filters, CSV export (plain PHP — see §2). ✅ done 2026-07-16.
 - **Phase 7 — Audit log**: `spatie/laravel-activitylog` wired into all domain models + a Filament page to browse/search the log.
 - **Phase 8 — Search & polish**: global search across products/requests/users, table filters, UI pass, seed demo data, final permission review per role.
 
@@ -381,6 +382,29 @@ php artisan shield:generate --panel=admin --all
 
 # PermissionSeeder extended again: added view_stock_alerts, granted to
 # Approver/Storekeeper/Supplier per §4's matrix (not Demander)
+
+php artisan migrate:fresh
+php artisan shield:generate --panel=admin --all
+php artisan db:seed
+php artisan test
+```
+
+### Phase 6 (2026-07-16) — Reports
+
+```bash
+composer require pxlrbt/filament-excel
+# FAILED — phpoffice/phpspreadsheet requires PHP <8.5, this project is on
+# 8.5.4; the only filament-excel majors supporting PHP 8.5 require
+# Filament 4/5. Composer reverted composer.json/.lock automatically.
+# Decision (user-confirmed): plain-PHP CSV export instead, no package.
+
+php artisan make:filament-page Reports
+php artisan make:filament-widget ProductsIssuedReportWidget --table --panel=admin
+php artisan make:filament-widget UserActivityReportWidget --table --panel=admin
+# Reports page uses Filament\Pages\Dashboard\Concerns\HasFiltersForm +
+# widgets using Filament\Widgets\Concerns\InteractsWithPageFilters — the
+# same mechanism Filament's own Dashboard uses to share one filter form
+# across multiple widgets, applied here to a non-Dashboard custom page
 
 php artisan migrate:fresh
 php artisan shield:generate --panel=admin --all
