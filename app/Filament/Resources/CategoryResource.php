@@ -7,6 +7,8 @@ use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -42,6 +44,20 @@ class CategoryResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            TextEntry::make('name'),
+            TextEntry::make('slug'),
+            TextEntry::make('products_count')->label('Products')->state(
+                fn (Category $record) => $record->products()->count()
+            ),
+            TextEntry::make('description')->placeholder('—')->columnSpanFull(),
+            TextEntry::make('created_at')->dateTime(),
+            TextEntry::make('updated_at')->dateTime(),
+        ])->columns(3);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -64,6 +80,7 @@ class CategoryResource extends Resource
             ])
             ->defaultSort('name')
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -86,6 +103,7 @@ class CategoryResource extends Resource
         return [
             'index' => Pages\ListCategories::route('/'),
             'create' => Pages\CreateCategory::route('/create'),
+            'view' => Pages\ViewCategory::route('/{record}'),
             'edit' => Pages\EditCategory::route('/{record}/edit'),
         ];
     }

@@ -7,6 +7,8 @@ use App\Filament\Resources\UnitResource\RelationManagers;
 use App\Models\Unit;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -39,6 +41,19 @@ class UnitResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            TextEntry::make('name'),
+            TextEntry::make('symbol'),
+            TextEntry::make('products_count')->label('Products')->state(
+                fn (Unit $record) => $record->products()->count()
+            ),
+            TextEntry::make('created_at')->dateTime(),
+            TextEntry::make('updated_at')->dateTime(),
+        ])->columns(3);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -61,6 +76,7 @@ class UnitResource extends Resource
             ])
             ->defaultSort('name')
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -83,6 +99,7 @@ class UnitResource extends Resource
         return [
             'index' => Pages\ListUnits::route('/'),
             'create' => Pages\CreateUnit::route('/create'),
+            'view' => Pages\ViewUnit::route('/{record}'),
             'edit' => Pages\EditUnit::route('/{record}/edit'),
         ];
     }

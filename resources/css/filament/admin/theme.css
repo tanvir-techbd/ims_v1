@@ -1,0 +1,70 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+/*
+ * Dark sidebar theme matching static_prototype/assets/css/style.css's
+ * design tokens (see that file's :root block) — the static mockups from
+ * Phase 1 used a dark green sidebar (#10241d) with light green text and
+ * an emerald active-item highlight; the real Filament panel used
+ * Filament's default light sidebar until this pass. Primary/purple
+ * semantic colors are already handled via AdminPanelProvider's
+ * ->colors() array — this file only covers what that can't reach
+ * (raw sidebar chrome, which isn't part of Filament's color system).
+ */
+
+:root {
+    --im-sidebar-bg: #10241d;
+    --im-sidebar-text: #cfe6dc;
+    --im-sidebar-text-active: #ffffff;
+    --im-sidebar-active-bg: #1a3b2f;
+    --im-sidebar-border: #1a3b2f;
+}
+
+.fi-sidebar {
+    background-color: var(--im-sidebar-bg);
+    border-inline-end-color: var(--im-sidebar-border);
+}
+
+.fi-sidebar-header {
+    background-color: var(--im-sidebar-bg);
+    border-color: var(--im-sidebar-border);
+}
+
+.fi-sidebar-header .fi-logo {
+    color: #ffffff;
+}
+
+.fi-sidebar-group-label {
+    color: #7fa593;
+}
+
+.fi-sidebar-item-button {
+    color: var(--im-sidebar-text);
+}
+
+.fi-sidebar-item-button:hover {
+    background-color: var(--im-sidebar-active-bg);
+    color: var(--im-sidebar-text-active);
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-button {
+    background-color: rgb(16 185 129 / 0.15);
+    color: #34d399;
+    font-weight: 600;
+}
+
+.fi-sidebar-item-icon {
+    color: currentColor;
+    opacity: 0.85;
+}
+
+.fi-sidebar-nav {
+    scrollbar-color: var(--im-sidebar-active-bg) transparent;
+}
+
+/* User menu trigger at the bottom of the sidebar on smaller layouts still
+   needs to read against the dark background. */
+.fi-sidebar .fi-user-menu .fi-user-menu-trigger {
+    color: var(--im-sidebar-text);
+}

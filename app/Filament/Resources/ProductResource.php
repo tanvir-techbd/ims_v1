@@ -7,6 +7,8 @@ use App\Models\Product;
 use App\Models\Setting;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -83,6 +85,27 @@ class ProductResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            TextEntry::make('name'),
+            TextEntry::make('sku')->label('SKU'),
+            TextEntry::make('category.name')->label('Category'),
+            TextEntry::make('unit.name')->label('Unit'),
+            TextEntry::make('current_stock')
+                ->label('Current Stock')
+                ->badge()
+                ->color(fn (Product $record) => $record->isLowStock() ? 'danger' : 'success'),
+            TextEntry::make('itemGroups.name')
+                ->label('Item Groups')
+                ->badge()
+                ->placeholder('Open to all Demanders'),
+            TextEntry::make('description')->placeholder('—')->columnSpanFull(),
+            TextEntry::make('created_at')->dateTime(),
+            TextEntry::make('updated_at')->dateTime(),
+        ])->columns(3);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -151,6 +174,7 @@ class ProductResource extends Resource
                             ->success()
                             ->send();
                     }),
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -196,6 +220,7 @@ class ProductResource extends Resource
         return [
             'index' => Pages\ListProducts::route('/'),
             'create' => Pages\CreateProduct::route('/create'),
+            'view' => Pages\ViewProduct::route('/{record}'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
     }

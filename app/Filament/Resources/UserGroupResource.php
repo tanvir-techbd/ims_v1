@@ -6,6 +6,8 @@ use App\Filament\Resources\UserGroupResource\Pages;
 use App\Models\UserGroup;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -55,6 +57,24 @@ class UserGroupResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            TextEntry::make('name'),
+            TextEntry::make('users.name')
+                ->label('Members')
+                ->badge()
+                ->placeholder('No members yet'),
+            TextEntry::make('itemGroups.name')
+                ->label('Permitted Item Groups')
+                ->badge()
+                ->placeholder('None permitted yet'),
+            TextEntry::make('description')->placeholder('—')->columnSpanFull(),
+            TextEntry::make('created_at')->dateTime(),
+            TextEntry::make('updated_at')->dateTime(),
+        ])->columns(2);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -83,6 +103,7 @@ class UserGroupResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -105,6 +126,7 @@ class UserGroupResource extends Resource
         return [
             'index' => Pages\ListUserGroups::route('/'),
             'create' => Pages\CreateUserGroup::route('/create'),
+            'view' => Pages\ViewUserGroup::route('/{record}'),
             'edit' => Pages\EditUserGroup::route('/{record}/edit'),
         ];
     }

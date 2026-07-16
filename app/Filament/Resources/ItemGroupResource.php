@@ -7,6 +7,8 @@ use App\Filament\Resources\ItemGroupResource\RelationManagers;
 use App\Models\ItemGroup;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -53,6 +55,25 @@ class ItemGroupResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            TextEntry::make('name'),
+            TextEntry::make('slug'),
+            TextEntry::make('products.name')
+                ->label('Products')
+                ->badge()
+                ->placeholder('None assigned'),
+            TextEntry::make('userGroups.name')
+                ->label('Permitted User Groups')
+                ->badge()
+                ->placeholder('None permitted yet'),
+            TextEntry::make('description')->placeholder('—')->columnSpanFull(),
+            TextEntry::make('created_at')->dateTime(),
+            TextEntry::make('updated_at')->dateTime(),
+        ])->columns(2);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -83,6 +104,7 @@ class ItemGroupResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -105,6 +127,7 @@ class ItemGroupResource extends Resource
         return [
             'index' => Pages\ListItemGroups::route('/'),
             'create' => Pages\CreateItemGroup::route('/create'),
+            'view' => Pages\ViewItemGroup::route('/{record}'),
             'edit' => Pages\EditItemGroup::route('/{record}/edit'),
         ];
     }

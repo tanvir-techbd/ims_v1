@@ -38,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
                 // be registered here or badges silently render unstyled.
                 'purple' => Color::Purple,
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])
