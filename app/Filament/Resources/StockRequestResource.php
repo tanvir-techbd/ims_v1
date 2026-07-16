@@ -16,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class StockRequestResource extends Resource
@@ -29,6 +30,24 @@ class StockRequestResource extends Resource
     protected static ?string $navigationGroup = 'Requests';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['id', 'requester.name'];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return "REQ-{$record->id}";
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Requester' => $record->requester?->name,
+            'Status' => $record->status->label(),
+        ];
+    }
 
     public static function form(Form $form): Form
     {
@@ -128,7 +147,17 @@ class StockRequestResource extends Resource
                     ->options(collect(RequestStatus::cases())->mapWithKeys(
                         fn (RequestStatus $status) => [$status->value => $status->label()]
                     )),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('from')->native(false),
+                        Forms\Components\DatePicker::make('until')->native(false),
+                    ])
+                    ->query(fn (Builder $query, array $data) => $query
+                        ->when($data['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('created_at', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $q, $date) => $q->whereDate('created_at', '<=', $date))),
             ])
+            ->emptyStateHeading('No stock requests yet')
+            ->emptyStateIcon('heroicon-o-clipboard-document-list')
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\Action::make('cancel')

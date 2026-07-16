@@ -39,7 +39,8 @@ class ItemsRelationManager extends RelationManager
             ->recordTitleAttribute('id')
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label('Product'),
+                    ->label('Product')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('requested_qty')
                     ->label('Requested')
                     ->numeric(),
@@ -54,6 +55,14 @@ class ItemsRelationManager extends RelationManager
                     ->badge()
                     ->formatStateUsing(fn (RequestItemStatus $state) => $state->label())
                     ->color(fn (RequestItemStatus $state) => $state->color()),
+            ])
+            ->defaultSort('id')
+            ->emptyStateHeading('No items on this request')
+            ->filters([
+                Tables\Filters\SelectFilter::make('status')
+                    ->options(collect(RequestItemStatus::cases())->mapWithKeys(
+                        fn (RequestItemStatus $status) => [$status->value => $status->label()]
+                    )),
             ])
             ->headerActions([])
             ->actions([

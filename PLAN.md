@@ -2,7 +2,7 @@
 
 Stack: Laravel 13 + Filament 3 + Filament Shield (roles/permissions) + Laravel Jetstream (Livewire stack, no Teams) + MySQL (via local LAMPP/XAMPP).
 
-Status: **Phases 0–7 complete**, including the user-group / item-group ordering-permission layer (§3a, added 2026-07-14). Phase 8 (search & polish) is next — the last phase in the original plan.
+Status: **All 8 phases complete** (0–8), including the user-group / item-group ordering-permission layer (§3a, added 2026-07-14). The system is feature-complete per this plan — see §9 for what's genuinely left (mostly deployment/production concerns, not missing features) if picking this up for further work.
 
 ---
 
@@ -184,7 +184,7 @@ Demanders search/browse products **category-wise, paginated** — this was alrea
 - **Phase 5 — Alerts**: low-stock Filament widget + dedicated "Stock Alerts" page, system Setting for the threshold. ✅ done 2026-07-16.
 - **Phase 6 — Reports**: Daily/Monthly/Yearly report pages with date-range filters, CSV export (plain PHP — see §2). ✅ done 2026-07-16.
 - **Phase 7 — Audit log**: `spatie/laravel-activitylog` wired into all domain models + a Filament page to browse/search the log. ✅ done 2026-07-16.
-- **Phase 8 — Search & polish**: global search across products/requests/users, table filters, UI pass, seed demo data, final permission review per role.
+- **Phase 8 — Search & polish**: global search across products/requests/users, table filters, UI pass, seed demo data, final permission review per role. ✅ done 2026-07-16.
 
 Each phase will be implemented service-by-service and reviewed before moving to the next, per your original instructions.
 
@@ -427,7 +427,23 @@ php artisan db:seed
 php artisan test
 ```
 
-Commands for the next phases will be added to this section as they're run.
+### Phase 8 (2026-07-16) — Search & polish
+
+```bash
+php artisan make:seeder DemoDataSeeder
+# NOT run by default via db:seed — DatabaseSeeder only seeds what every
+# real deployment needs. Run explicitly:
+php artisan db:seed --class=DemoDataSeeder
+# Every demo user's password is "password".
+
+php artisan migrate:fresh
+php artisan shield:generate --panel=admin --all
+php artisan db:seed
+php artisan db:seed --class=DemoDataSeeder
+php artisan test
+```
+
+This was the last phase in the original plan — see §9 below for what's genuinely left.
 
 ---
 
@@ -437,3 +453,18 @@ Commands for the next phases will be added to this section as they're run.
 - **Multi-item requests**: yes — a single `StockRequest` can contain multiple `StockRequestItem` rows (cart-like form), as already reflected in the ERD in §3.
 - **Low-stock threshold default**: placeholder value of `10`, stored in `settings.low_stock_threshold`, editable by Admin in Phase 5. Change anytime after seeding.
 - **Rejected items**: terminal — not resubmittable in place. The Demander creates a new `StockRequest` if they still need the item. Keeps status transitions one-directional and simple to audit; can add resubmission later if it proves too rigid in practice.
+
+---
+
+## 9. Status: feature-complete. What's genuinely left.
+
+All 8 phases in §5 are done. Every requirement in the original spec has a working, tested implementation: role-based access (Admin/Approver/Storekeeper/Demander/Supplier), the user-group/item-group ordering-permission layer, the full request→approval→issuance workflow with a complete trail, low-stock alerts, Daily/Monthly/Yearly reports with CSV export, a general audit log, global search, and demo data. 92 automated tests (85 passing, 7 pre-existing Jetstream skips unrelated to this app, 0 failures).
+
+What's left is deployment/production concerns, not missing features:
+
+- **Production `.env`**: real DB credentials, `APP_ENV=production`, `APP_DEBUG=false`, a real `MAIL_MAILER` (currently `log`), queue worker setup if `QUEUE_CONNECTION` should move off `sync`/`database` for scale.
+- **True `.xlsx` export**: currently CSV-only — `pxlrbt/filament-excel` couldn't install on this PHP 8.5 + Filament 3.3 combination (§2). Revisit once the ecosystem catches up, or if this project ever upgrades to Filament 4.
+- **The two open questions never explicitly answered**, currently resolved with documented defaults (§8): unit conversion (not supported) and whether rejected items can be resubmitted (they can't — new request required). Both are cheap to revisit if they prove wrong in practice.
+- **A real browser walkthrough**: everything has been verified via automated HTTP/Livewire tests, which exercise the real middleware/auth/permission stack — but nobody has clicked through the actual rendered UI in a browser yet. Worth doing before considering this "done done," especially for visual/UX details tests can't catch (e.g. does the Repeater on the New Request form feel usable, do the badge colors read well together).
+- **`npm run build`**: assets have only been used via `vite dev`/`artisan serve` during development; a production asset build hasn't been exercised.
+- Anything in each phase's `.claude/design/*.md` "Not done yet" notes that was explicitly deferred as a stretch goal (e.g. Phase 5's threshold-cross push notification) — all were deliberate scope calls, not oversights, but worth a second look if requirements evolve.

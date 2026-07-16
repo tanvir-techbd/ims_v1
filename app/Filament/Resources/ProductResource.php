@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class ProductResource extends Resource
@@ -23,6 +24,21 @@ class ProductResource extends Resource
     protected static ?string $navigationGroup = 'Inventory';
 
     protected static ?int $navigationSort = 4;
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'sku'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Category' => $record->category?->name,
+            'Stock' => $record->current_stock,
+        ];
+    }
 
     public static function form(Form $form): Form
     {
@@ -109,6 +125,8 @@ class ProductResource extends Resource
                         'current_stock', '<=', (int) Setting::get('low_stock_threshold', 10)
                     )),
             ])
+            ->emptyStateHeading('No products found')
+            ->emptyStateIcon('heroicon-o-cube')
             ->actions([
                 Tables\Actions\Action::make('stockIn')
                     ->label('Stock In')

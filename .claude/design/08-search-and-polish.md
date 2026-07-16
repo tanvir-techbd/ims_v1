@@ -1,6 +1,6 @@
 # Phase 8 — Search & Polish
 
-Status: **not started**.
+Status: **done** (2026-07-16) — final phase of the original `PLAN.md` §5 plan. See `.claude/memory/CONTEXT.md` for what shipped, including the automated (not manual) permissions-matrix re-verification and a real bug the demo seeder caught in itself before it ever shipped.
 
 ## Global search
 
