@@ -34,18 +34,24 @@ class PermissionSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
+        // Note: Shield names permissions for compound-word models with a
+        // literal "::" (e.g. "view_stock::request", not "view_stock_request")
+        // — a cosmetic quirk, harmless, see .claude/memory/CONTEXT.md.
         $this->assignRolePermissions('Approver', [
             'view_any_product', 'view_product',
+            'view_any_stock::request', 'view_stock::request',
             'approve_request', 'view_reports',
         ]);
 
         $this->assignRolePermissions('Storekeeper', [
             'view_any_product', 'view_product',
+            'view_any_stock::request', 'view_stock::request',
             'record_stock_in', 'issue_request', 'view_reports',
         ]);
 
         $this->assignRolePermissions('Demander', [
             'view_any_product', 'view_product',
+            'view_any_stock::request', 'view_stock::request', 'create_stock::request',
         ]);
 
         $this->assignRolePermissions('Supplier', [

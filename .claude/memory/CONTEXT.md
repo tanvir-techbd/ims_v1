@@ -6,6 +6,26 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
+## 2026-07-16 — Session 1 (continued): Phase 4 (request → approval → issuance UI) COMPLETE
+
+**Built:** `StockRequestResource` — Create page (notes + a repeater of product/qty rows) and a View page (Filament Infolist for the request header + `ItemsRelationManager` for the itemized workflow). No Edit page at all: once submitted, a request's items only change through the guarded Approve/Reject/Issue actions, never a raw form — deliberately, matches the "rejected items are terminal" one-directional status philosophy already established in Phase 2.
+
+**Key wiring decision:** the Create form's item repeater is plain array data, *not* a relationship-bound field. `CreateStockRequest::handleRecordCreation()` is overridden to create the `StockRequest` then loop `$stockRequest->addItem($product, $qty)` for each row inside a `DB::transaction()` — this is what actually enforces the item-group ordering permission (§3a) server-side. If `addItem()` throws `InventoryRuleException`, the transaction rolls back (no orphaned half-created request) and the exception is caught to show a Filament notification + `$this->halt()`, rather than a raw 500. Tested explicitly: a denied product results in zero rows in both `stock_requests` and `stock_request_items`.
+
+**`ItemsRelationManager`** has no create/edit/delete actions (items are addition-only, added above) — instead: Approve, Reject, Issue (each a `Tables\Actions\Action` with its own form, gated by `can('approve_request')` / `can('issue_request')`, calling the Phase 2 model methods and catching `InventoryRuleException` into a notification), plus a read-only "View Trail" action using an Infolist with `RepeatableEntry` for the approval and issuance history. Diverges from the original design doc, which sketched one combined approve/reject form — two separate row actions turned out simpler and is what actually got built.
+
+**Notifications:** requester gets a Filament database notification on approve/reject/issue (`sendToDatabase($record->stockRequest->requester)`). Needed `php artisan make:notifications-table` first — nothing in this project had created the standard Laravel `notifications` table yet.
+
+**Query scoping:** same "lacks an elevated role" pattern as `ProductResource` — a pure Demander only sees their own requests (`where('requester_id', ...)`), Admin/Approver/Storekeeper see everything they have permission to view at all (Supplier gets no `view_any_stock::request` permission at all, so this resource is simply unreachable for that role — no special-case code needed for that exclusion).
+
+**Permissions:** extended `PermissionSeeder` in place rather than creating a new seeder — `view_any_stock::request` / `view_stock::request` to Approver, Storekeeper, Demander; `create_stock::request` to Demander only. Same Shield "::" naming quirk as `UserGroup`/`ItemGroup` (compound model name → literal `::` in the permission string) — confirmed this affects `StockRequest` too, not just "Group"-suffixed models; still cosmetic/harmless.
+
+**Tests:** `tests/Feature/StockRequestWorkflowUiTest.php` (7 tests) — end-to-end through the actual Livewire/Filament layer via `Livewire::test()`/`Livewire::actingAs()`, not just the underlying model methods (those were already covered in Phase 2's `InventoryWorkflowTest`). Covers: create with a permitted product, create rejected+rolled-back for a denied product, list scoping, approve within limit, approve-over-limit blocked by the form's own `maxValue` validation, issue capped by stock, and the cancel action. Plus 2 more paths added to `AdminPanelSmokeTest` for the new resource. Full suite: 61 tests, 54 passed, 7 pre-existing Jetstream skips, 0 failures — all ran clean on the first real attempt this time (no repeat of Phase 3's canAccessPanel/define_via_gate surprises, since both fixes already landed).
+
+**Not done yet:** Phase 5 (low-stock alerts widget/page + the Settings page for editing the threshold — `Setting::get('low_stock_threshold')` already exists and is used by `Product::isLowStock()`, but there's no UI yet to change it).
+
+---
+
 ## 2026-07-14 — Session 1 (continued): Phase 3 (Filament CRUD resources) COMPLETE
 
 **Built:** 6 Filament resources — `CategoryResource`, `UnitResource`, `ItemGroupResource`, `UserGroupResource`, `ProductResource`, `UserResource`. All generated via `make:filament-resource --generate` then substantially hand-rewritten (the auto-inferred forms were unusable as-is — e.g. User's included raw `two_factor_secret`/`current_team_id` fields, Product's let `current_stock` be freely edited). Notable specifics:

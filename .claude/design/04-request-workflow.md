@@ -1,6 +1,6 @@
 # Phase 4 — Request → Approval → Issuance Workflow
 
-Status: **not started**. This is the core of the system — take it slow and test the edge cases.
+Status: **done** (2026-07-16). See `.claude/memory/CONTEXT.md` for what actually shipped and where it diverges from this doc's original sketch (mainly: Approve/Reject/Issue ended up as three separate row actions on the items relation manager rather than one combined form, and there's no StockRequest edit page at all — only create + view, since edits-after-submission should go through the guarded workflow actions, not a raw form).
 
 ## `StockRequestResource`
 

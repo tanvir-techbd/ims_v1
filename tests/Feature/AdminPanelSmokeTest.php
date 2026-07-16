@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\ItemGroup;
 use App\Models\Product;
+use App\Models\StockRequest;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\UserGroup;
@@ -44,6 +45,7 @@ class AdminPanelSmokeTest extends TestCase
             '/admin/user-groups',
             '/admin/products',
             '/admin/users',
+            '/admin/stock-requests',
         ];
 
         foreach ($paths as $path) {
@@ -62,6 +64,7 @@ class AdminPanelSmokeTest extends TestCase
             '/admin/user-groups/create',
             '/admin/products/create',
             '/admin/users/create',
+            '/admin/stock-requests/create',
         ];
 
         foreach ($paths as $path) {
@@ -80,6 +83,7 @@ class AdminPanelSmokeTest extends TestCase
             'category_id' => $category->id,
             'unit_id' => $unit->id,
         ]);
+        $stockRequest = StockRequest::factory()->create(['requester_id' => $admin->id]);
 
         $paths = [
             "/admin/categories/{$category->id}/edit",
@@ -88,6 +92,7 @@ class AdminPanelSmokeTest extends TestCase
             "/admin/user-groups/{$userGroup->id}/edit",
             "/admin/products/{$product->id}/edit",
             "/admin/users/{$admin->id}/edit",
+            "/admin/stock-requests/{$stockRequest->id}",
         ];
 
         foreach ($paths as $path) {
