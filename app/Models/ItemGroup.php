@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * A permission-scoping classification for products — separate from Category,
@@ -18,11 +20,18 @@ class ItemGroup extends Model
     /** @use HasFactory<\Database\Factories\ItemGroupFactory> */
     use HasFactory;
 
+    use LogsActivity;
+
     protected $fillable = [
         'name',
         'slug',
         'description',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly($this->fillable)->logOnlyDirty()->dontLogEmptyChanges();
+    }
 
     protected static function booted(): void
     {

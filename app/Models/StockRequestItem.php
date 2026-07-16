@@ -10,11 +10,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class StockRequestItem extends Model
 {
     /** @use HasFactory<\Database\Factories\StockRequestItemFactory> */
     use HasFactory;
+
+    use LogsActivity;
 
     protected $fillable = [
         'stock_request_id',
@@ -33,6 +37,11 @@ class StockRequestItem extends Model
             'issued_qty' => 'integer',
             'status' => RequestItemStatus::class,
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly($this->fillable)->logOnlyDirty()->dontLogEmptyChanges();
     }
 
     public function stockRequest(): BelongsTo

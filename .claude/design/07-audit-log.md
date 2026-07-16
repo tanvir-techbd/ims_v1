@@ -1,6 +1,6 @@
 # Phase 7 — Audit Log
 
-Status: **not started**.
+Status: **done** (2026-07-16). See `.claude/memory/CONTEXT.md` for what actually shipped, including the `attribute_changes` data shape (this package version splits it from `properties`, differently from older docs/tutorials you might find) and the deliberate exclusions (`Product.current_stock`, `User.password`/2FA fields).
 
 ## Package
 

@@ -10,12 +10,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class Product extends Model
 {
     /** @use HasFactory<\Database\Factories\ProductFactory> */
     use HasFactory;
 
+    use LogsActivity;
     use SoftDeletes;
 
     protected $fillable = [
@@ -32,6 +35,20 @@ class Product extends Model
         return [
             'current_stock' => 'integer',
         ];
+    }
+
+    /**
+     * current_stock is deliberately excluded — it changes on every
+     * recordStockIn()/recordStockOut() call, which already has its own
+     * purpose-built ledger (StockMovement). Logging it here too would just
+     * be noisy duplication of that trail.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'sku', 'category_id', 'unit_id', 'description'])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
     }
 
     public function category(): BelongsTo

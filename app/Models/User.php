@@ -15,6 +15,8 @@ use Illuminate\Support\Collection;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
@@ -26,6 +28,7 @@ class User extends Authenticatable implements FilamentUser
 
     use HasProfilePhoto;
     use HasRoles;
+    use LogsActivity;
     use Notifiable;
     use TwoFactorAuthenticatable;
 
@@ -83,6 +86,16 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->roles()->exists();
+    }
+
+    /**
+     * Deliberately just name/email — password (even hashed) and the 2FA
+     * secret/recovery-code columns are excluded, there's no value in
+     * showing hash diffs and every reason not to.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly(['name', 'email'])->logOnlyDirty()->dontLogEmptyChanges();
     }
 
     public function stockRequests(): HasMany

@@ -6,6 +6,26 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
+## 2026-07-16 — Session 1 (continued): Phase 7 (audit log) COMPLETE
+
+**Built:** `spatie/laravel-activitylog` (v5, installed clean — no PHP 8.5 issues like Phase 6's Excel package) wired into all 11 domain models (`Category`, `Unit`, `Product`, `StockRequest`, `StockRequestItem`, `RequestApproval`, `StockIssuance`, `StockMovement`, `ItemGroup`, `UserGroup`, `User`) via the `LogsActivity` trait + a `getActivitylogOptions()` override on each. `App\Filament\Resources\ActivityResource` (Admin-only, read-only — `canCreate()`/`canEdit()`/`canDelete()` hard-return `false` rather than relying on Shield policy absence) browses/filters/searches it: by model type, event type, date range, with a "View Changes" modal showing before/after via `KeyValueEntry`.
+
+**Real API surprise, verified empirically before trusting it:** this package version (v5) has a schema/data shape that differs from what older tutorials/memory would suggest — the migration has *two* separate JSON columns, `attribute_changes` and `properties`, and the actual diff data lives under `attribute_changes` as `{"attributes": {...new...}, "old": {...old...}}` (only `attributes` present on `created`, only `old` on `deleted`, both on `updated`). Confirmed this by creating/updating/deleting a real record in tinker and inspecting the row directly — same "verify against the installed package, don't trust memory" lesson as Phase 4's `Halt`/`infolist()` API checks. `LogOptions`'s real namespace is `Spatie\Activitylog\Support\LogOptions` and the trait is `Spatie\Activitylog\Models\Concerns\LogsActivity` — both differ from what a quick guess would produce (no top-level aliases exist).
+
+**Deliberate exclusions, both tested:**
+- `Product.current_stock` is excluded from logging — it changes on every `recordStockIn()`/`recordStockOut()` call, which already has `StockMovement` as its purpose-built ledger; logging it here too would just duplicate that trail with noise. `Product`'s other fields (name, sku, category_id, unit_id, description) still log normally.
+- `User` only logs `name`/`email` — password (even hashed) and the 2FA secret/recovery-code columns are excluded outright, `logOnly(['name', 'email'])` rather than using `$this->fillable` (which includes `password`).
+
+**Append-only models** (`RequestApproval`, `StockIssuance`, `StockMovement`) intentionally log without `logOnlyDirty()` — they're never updated after creation in the normal workflow, so there was nothing to make dirty-only meaningful there; they exist in the audit log purely to capture the "created" event as a general-purpose safety net, on top of (not instead of) the domain-level trail already built in Phase 4.
+
+**Same Shield-quirk pattern as prior phases, not investigated further:** `shield:generate` auto-created `ActivityPolicy.php` and CRUD permissions for the `Activity` model even though `ActivityResource`'s hard-coded static method overrides make that policy completely unreachable — consistent with the widget-permission dead-weight noted in Phase 5/6. Also newly noticed this run: Shield generated **page permissions** for `Reports`/`Settings`/`StockAlerts` this time, which it hadn't in earlier phases — didn't dig into why (possibly related to how many pages now exist), doesn't affect anything since all three gate access via their own `canAccess()` overrides, not Shield's permissions.
+
+**Tests:** `tests/Feature/AuditLogTest.php` (7 tests) — readable old/new values on update, causer correctly captured as the acting authenticated user, `current_stock` changes produce zero noisy Product "updated" logs, password changes are never logged (or produce no log at all, both asserted as correct outcomes), access control (Admin in, non-Admin forbidden), and both the model-type filter and date-range filter actually narrow results through the real Livewire table filter UI. Full suite: 82 tests, 75 passed, 7 pre-existing Jetstream skips, 0 failures.
+
+**Not done yet:** Phase 8 (search & polish) — the last phase in the original `PLAN.md` §5 list: global search across products/requests/users, a final per-role permission walkthrough, demo/seed data for a convincing demo, and a UI consistency pass.
+
+---
+
 ## 2026-07-16 — Session 1 (continued): Phase 6 (reports) COMPLETE
 
 **Environment wall hit, resolved with the user's input:** `pxlrbt/filament-excel` cannot install on this project's stack — its Excel engine `phpoffice/phpspreadsheet` requires PHP <8.5 (we're on 8.5.4), and the only `filament-excel` major versions that *do* support PHP 8.5 require Filament ^4.0/^5.0 (this project is pinned to Filament ^3.3). Asked the user; they chose plain-PHP CSV export over downgrading PHP system-wide. Built `App\Support\Reports\CsvExport` — a ~20-line `fputcsv`-based `StreamedResponse` helper, zero dependencies. If the ecosystem catches up (phpspreadsheet supporting 8.5, or this project upgrading to Filament 4 later), swapping in real `.xlsx` export should be a small, contained change — the export button/action shape already exists, only the implementation behind it would change.

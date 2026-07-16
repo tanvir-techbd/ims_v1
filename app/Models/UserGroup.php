@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * How Admin organizes users (typically Demanders) for the purpose of
@@ -17,10 +19,17 @@ class UserGroup extends Model
     /** @use HasFactory<\Database\Factories\UserGroupFactory> */
     use HasFactory;
 
+    use LogsActivity;
+
     protected $fillable = [
         'name',
         'description',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly($this->fillable)->logOnlyDirty()->dontLogEmptyChanges();
+    }
 
     public function users(): BelongsToMany
     {

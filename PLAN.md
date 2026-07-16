@@ -2,7 +2,7 @@
 
 Stack: Laravel 13 + Filament 3 + Filament Shield (roles/permissions) + Laravel Jetstream (Livewire stack, no Teams) + MySQL (via local LAMPP/XAMPP).
 
-Status: **Phases 0–6 complete**, including the user-group / item-group ordering-permission layer (§3a, added 2026-07-14). Phase 7 (audit log) is next.
+Status: **Phases 0–7 complete**, including the user-group / item-group ordering-permission layer (§3a, added 2026-07-14). Phase 8 (search & polish) is next — the last phase in the original plan.
 
 ---
 
@@ -34,9 +34,6 @@ Status: **Phases 0–6 complete**, including the user-group / item-group orderin
 - Filament Shield installed, `spatie/laravel-permission` migrated
 - `RoleSeeder` seeds the 5 roles; `DatabaseSeeder` creates an `admin@example.com` super-admin user
 - `config/filament-shield.php`: `super_admin.name` set to `Admin`
-
-Remaining packages to add during backend implementation (not yet installed):
-- `spatie/laravel-activitylog` — full audit log of model changes (requests, approvals, issuances, stock movements, user/role changes)
 
 **Dropped:** `pxlrbt/filament-excel` — couldn't install (see §5/Phase 6 build notes below): its Excel engine caps at PHP <8.5, and the PHP-8.5-compatible `filament-excel` majors need Filament 4/5, not our 3.3. Reports export via plain-PHP CSV instead (`App\Support\Reports\CsvExport`).
 
@@ -186,7 +183,7 @@ Demanders search/browse products **category-wise, paginated** — this was alrea
 - **Phase 4 — Request workflow**: StockRequestResource with item relation manager, submit/approve/reject/issue actions, status transitions, notifications. ✅ done 2026-07-16 — see `.claude/design/04-request-workflow.md` for what shipped vs. the original sketch.
 - **Phase 5 — Alerts**: low-stock Filament widget + dedicated "Stock Alerts" page, system Setting for the threshold. ✅ done 2026-07-16.
 - **Phase 6 — Reports**: Daily/Monthly/Yearly report pages with date-range filters, CSV export (plain PHP — see §2). ✅ done 2026-07-16.
-- **Phase 7 — Audit log**: `spatie/laravel-activitylog` wired into all domain models + a Filament page to browse/search the log.
+- **Phase 7 — Audit log**: `spatie/laravel-activitylog` wired into all domain models + a Filament page to browse/search the log. ✅ done 2026-07-16.
 - **Phase 8 — Search & polish**: global search across products/requests/users, table filters, UI pass, seed demo data, final permission review per role.
 
 Each phase will be implemented service-by-service and reviewed before moving to the next, per your original instructions.
@@ -405,6 +402,24 @@ php artisan make:filament-widget UserActivityReportWidget --table --panel=admin
 # widgets using Filament\Widgets\Concerns\InteractsWithPageFilters — the
 # same mechanism Filament's own Dashboard uses to share one filter form
 # across multiple widgets, applied here to a non-Dashboard custom page
+
+php artisan migrate:fresh
+php artisan shield:generate --panel=admin --all
+php artisan db:seed
+php artisan test
+```
+
+### Phase 7 (2026-07-16) — Audit log
+
+```bash
+composer require spatie/laravel-activitylog
+php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-migrations"
+php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-config"
+php artisan migrate
+
+php artisan make:filament-resource Activity --model-namespace="Spatie\Activitylog\Models"
+# generated create/edit pages deleted — this resource is read-only,
+# canCreate()/canEdit()/canDelete() all hard-return false
 
 php artisan migrate:fresh
 php artisan shield:generate --panel=admin --all

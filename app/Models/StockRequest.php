@@ -9,11 +9,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class StockRequest extends Model
 {
     /** @use HasFactory<\Database\Factories\StockRequestFactory> */
     use HasFactory;
+
+    use LogsActivity;
 
     protected $fillable = [
         'requester_id',
@@ -26,6 +30,11 @@ class StockRequest extends Model
         return [
             'status' => RequestStatus::class,
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly($this->fillable)->logOnlyDirty()->dontLogEmptyChanges();
     }
 
     public function requester(): BelongsTo
