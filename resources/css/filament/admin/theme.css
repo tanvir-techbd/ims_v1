@@ -68,3 +68,14 @@
 .fi-sidebar .fi-user-menu .fi-user-menu-trigger {
     color: var(--im-sidebar-text);
 }
+
+/*
+ * Login page (/admin/login) — Filament's "simple" auth layout. Same dark
+ * green gradient as static_prototype/pages/login.html's .auth-shell; the
+ * white card (.fi-simple-main) already looks close enough to that mockup's
+ * .auth-card out of the box that it doesn't need overriding, just the page
+ * background behind it.
+ */
+.fi-simple-layout {
+    background: linear-gradient(160deg, #0d2b21, #103a2c 45%, #0b1f18);
+}

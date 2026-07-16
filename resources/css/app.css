@@ -5,3 +5,174 @@
 [x-cloak] {
     display: none;
 }
+
+/*
+ * Login/register auth-shell — ported from static_prototype/assets/css/style.css
+ * so the one real entry point into this app (Fortify's /login and /register,
+ * the only pages outside the Filament panel a guest ever sees) matches the
+ * Phase 1 mockup design instead of Jetstream's default indigo card. Scoped
+ * to just the design tokens + classes the auth views use, not the full
+ * prototype stylesheet (sidebar/table/badge styles belong to the Filament
+ * theme, see resources/css/filament/admin/theme.css).
+ */
+:root {
+    --color-bg: #f4f6f8;
+    --color-surface: #ffffff;
+    --color-border: #e2e6ea;
+    --color-text: #1c2530;
+    --color-text-muted: #6b7684;
+    --color-primary: #10b981;
+    --color-primary-dark: #059669;
+    --color-primary-bg: #ecfdf5;
+    --color-rejected: #b91c1c;
+    --color-rejected-bg: #fee2e2;
+}
+
+.auth-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #0d2b21, #103a2c 45%, #0b1f18);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.auth-card {
+    width: 380px;
+    background: var(--color-surface);
+    border-radius: 14px;
+    padding: 34px 32px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.auth-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 22px;
+}
+
+.auth-brand .logo-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #06231a;
+    font-weight: 700;
+}
+
+.auth-brand .name {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--color-text);
+}
+
+.auth-card h1 {
+    font-size: 17px;
+    text-align: center;
+    margin: 0 0 4px;
+    color: var(--color-text);
+}
+
+.auth-card .auth-sub {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 12.5px;
+    margin-bottom: 22px;
+}
+
+.auth-card .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.auth-card .field label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.auth-card .field input {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 9px 11px;
+    font-size: 13.5px;
+    font-family: inherit;
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+.auth-card .field input:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+    border-color: var(--color-primary);
+}
+
+.auth-card .field-error {
+    font-size: 11.5px;
+    color: var(--color-rejected);
+}
+
+.auth-card .auth-status {
+    font-size: 12.5px;
+    color: var(--color-primary-dark);
+    background: var(--color-primary-bg);
+    border-radius: 8px;
+    padding: 8px 11px;
+    margin-bottom: 14px;
+}
+
+.auth-card .auth-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12.5px;
+    margin-bottom: 6px;
+    color: var(--color-text-muted);
+}
+
+.auth-card .auth-row a,
+.auth-card .auth-footer a {
+    color: var(--color-primary-dark);
+    text-decoration: none;
+}
+
+.auth-card .auth-row a:hover,
+.auth-card .auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.auth-card .btn-primary {
+    width: 100%;
+    display: block;
+    text-align: center;
+    justify-content: center;
+    padding: 10px;
+    margin-top: 6px;
+    background: var(--color-primary);
+    color: #06231a;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.auth-card .btn-primary:hover {
+    background: var(--color-primary-dark);
+    color: #fff;
+}
+
+.auth-card .auth-footer {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--color-text-muted);
+    margin-top: 18px;
+}

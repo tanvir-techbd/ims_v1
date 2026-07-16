@@ -2,7 +2,17 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\AdminRecentRequestsWidget;
+use App\Filament\Widgets\AdminStatsWidget;
+use App\Filament\Widgets\ApproverPendingQueueWidget;
+use App\Filament\Widgets\ApproverStatsWidget;
+use App\Filament\Widgets\DemanderMyRequestsWidget;
+use App\Filament\Widgets\DemanderStatsWidget;
 use App\Filament\Widgets\LowStockWidget;
+use App\Filament\Widgets\StorekeeperAwaitingIssuanceWidget;
+use App\Filament\Widgets\StorekeeperStatsWidget;
+use App\Filament\Widgets\SupplierStatsWidget;
+use App\Filament\Widgets\SupplierStockLevelsWidget;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -54,8 +64,18 @@ class AdminPanelProvider extends PanelProvider
             // onto the Dashboard too, unfiltered. List Dashboard widgets explicitly.
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                AdminStatsWidget::class,
+                ApproverStatsWidget::class,
+                DemanderStatsWidget::class,
+                StorekeeperStatsWidget::class,
+                SupplierStatsWidget::class,
+                AdminRecentRequestsWidget::class,
+                ApproverPendingQueueWidget::class,
+                DemanderMyRequestsWidget::class,
+                StorekeeperAwaitingIssuanceWidget::class,
+                SupplierStockLevelsWidget::class,
                 LowStockWidget::class,
+                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
