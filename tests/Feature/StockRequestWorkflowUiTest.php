@@ -251,6 +251,22 @@ class StockRequestWorkflowUiTest extends TestCase
         $this->assertSame(RequestStatus::Received, $stockRequest->fresh()->status);
     }
 
+    public function test_requester_can_mark_as_received_from_the_view_page_header_action(): void
+    {
+        $demander = $this->demander();
+        $stockRequest = StockRequest::factory()->create([
+            'requester_id' => $demander->id,
+            'status' => RequestStatus::PartiallyIssued,
+        ]);
+
+        Livewire::actingAs($demander)
+            ->test(ViewStockRequest::class, ['record' => $stockRequest->getRouteKey()])
+            ->callAction('markReceived')
+            ->assertHasNoActionErrors();
+
+        $this->assertSame(RequestStatus::Received, $stockRequest->fresh()->status);
+    }
+
     public function test_mark_received_is_not_offered_for_a_pending_request(): void
     {
         $demander = $this->demander();

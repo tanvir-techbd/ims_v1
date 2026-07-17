@@ -6,6 +6,18 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
+## 2026-07-17 — Session 1 (continued): "Mark as Received" was missing from the View page
+
+**Why:** immediately after the previous entry's "Received" status work, user reported "I can not see any received action button on demander side." The action was real and working — I'd only added it to `StockRequestResource::table()`'s row actions, which render on the **List** page (`/admin/stock-requests`). Confirmed via a fresh Playwright check (created a brand-new request via tinker, approved + issued it, then loaded both pages as the requester): the button appeared on the List page but `ViewStockRequest` — the page a demander actually lands on after clicking "View" from the list or the dashboard's "My Requests" table — had zero header actions at all. That's almost certainly where the user was looking.
+
+**Fix:** added a `getHeaderActions()` override to `app/Filament/Resources/StockRequestResource/Pages/ViewStockRequest.php` with the same `markReceived` action (same visibility guard, same confirmation copy) — Filament's page-header actions use `Filament\Actions\Action`, a different class from `Filament\Tables\Actions\Action` used by table rows, so the two definitions couldn't be shared as one object; kept them as two small, matching declarations rather than over-engineering a shared builder for ~15 lines of config.
+
+**Verified:** re-ran the fresh-request Playwright check — button now appears on both List and View pages; clicked it from the View page specifically and confirmed the full round-trip (confirmation modal → "Marked as received" notification → badge flips to teal Received → button correctly disappears since there's nothing left to confirm). Added `test_requester_can_mark_as_received_from_the_view_page_header_action` to `StockRequestWorkflowUiTest` using `Livewire::test(ViewStockRequest::class, ['record' => ...])->callAction(...)` (the page-header-action test pattern — distinct from `callTableAction` used for the list page). Full suite: 103 tests, 96 passed, 7 pre-existing skips, 0 failures.
+
+**Lesson:** when adding an action tied to a specific Filament resource, check *every* page a user might reach that record from (list row vs. detail/view page have entirely separate action registration — `table()`'s `->actions()` vs. a page's `getHeaderActions()`), not just the one that was top of mind while writing the code.
+
+---
+
 ## 2026-07-17 — Session 1 (continued): "Received" status + dashboard cleanup
 
 **Why:** user asked for a 4th workflow step — after a Storekeeper issues stock, the Demander should be able to confirm they physically received it — plus wanted Filament's default Dashboard widgets (the "Welcome / Sign out" AccountWidget and the "filament v3.3.54 / Documentation / GitHub" FilamentInfoWidget) replaced with something simple and app-relevant.
