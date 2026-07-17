@@ -6,6 +6,18 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
+## 2026-07-17 — Session 1 (continued): HOW_TO_USE.md + marketing landing page
+
+**Why:** user asked "form which ID i can order? then approve? then issue?" (wanted a concrete usage walkthrough with real demo credentials) plus "make a landing page nicely, direct login is not good to see" — `/` previously just redirected straight to `/admin/login` with zero context.
+
+**`HOW_TO_USE.md`** (new, project root): demo account table (all 7 seeded users, role, and what each can/can't order — Sarah Kim/David Lee are Facilities Team → "Facilities Orderable", Fatima Noor is IT Department → "IT Orderable"), then a 4-step Order→Approve→Issue walkthrough. Written from actually reading `DemoDataSeeder` and `ItemsRelationManager` rather than assuming — corrected two wrong guesses along the way: there is no separate "Approvals" or "Issuance" nav page (those only exist in the static_prototype mockups); in the real app, Approve/Reject/Issue/View Trail are all row actions inside the **Requested Items** relation-manager table on a Stock Request's View page. The guide points there instead.
+
+**Landing page** (`resources/views/landing.blade.php`, new): a real marketing homepage — dark-green hero (same gradient as the auth-shell) with headline/subtext/Sign In CTA, a 3-step "Order → Approve → Issue" section, and a 6-item feature grid (role-based access, real-time stock tracking, low-stock alerts, audit trail, reports/export, item-group ordering permissions). CSS lives in `resources/css/app.css` as a new `.landing-*` block reusing the same `--color-*` tokens as the auth-shell — no new design system, just a second layout built from the same tokens. `routes/web.php`'s `/` now renders this view instead of `redirect('/admin')`; `/admin` itself is untouched, still the real app entry point once someone clicks **Sign In**.
+
+**Verification:** rebuilt Vite assets, `php artisan test` still 95/88/7-skipped/0-failures (`ExampleTest` updated for the new `assertOk()`+`assertSee('Sign In')` expectation instead of the old redirect assertion), Playwright-screenshotted the landing page and confirmed clicking **Sign In** correctly lands on `/admin/login` with zero console errors. Playwright itself needed reinstalling this session — the scratchpad directory from earlier in the conversation had been cleared between turns (`npm install playwright` in the current scratchpad path fixed it; worth remembering the scratchpad isn't guaranteed to persist across a long session).
+
+---
+
 ## 2026-07-17 — Session 1 (continued): Day/night mode made visible + theme verification pass
 
 **Why:** user asked to "implement day-night mode and improve the theme and text colors." Investigation found Filament 3 already ships dark mode on by default (`HasDarkMode::$hasDarkMode = true` — nothing to "implement" there) and a light/dark/system switcher already existed and worked correctly everywhere tested (Dashboard, Products list, a View page, Reports with its filter form, a Create form, Roles, Settings) — but it was tucked inside the user-avatar dropdown menu, easy to never notice. Also computed WCAG contrast ratios by hand for the custom sidebar CSS from the theme work above (`--im-sidebar-text` #cfe6dc on #10241d ≈ 11.5:1, group labels #7fa593 ≈ 5.5:1) — both already comfortably exceed AA, so there was no actual contrast bug to fix there despite it looking slightly muted in screenshots.

@@ -176,3 +176,222 @@
     color: var(--color-text-muted);
     margin-top: 18px;
 }
+
+/*
+ * Marketing landing page (/) — same brand tokens as the auth-shell above,
+ * just laid out as a real homepage instead of a centered card. A guest's
+ * first impression shouldn't be a bare login form; this exists to explain
+ * what the app is and who it's for before asking anyone to sign in.
+ */
+.landing {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--color-text);
+    background: var(--color-bg);
+}
+
+.landing-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 22px 24px;
+}
+
+.landing-nav .auth-brand {
+    margin-bottom: 0;
+    justify-content: flex-start;
+}
+
+.landing-nav .auth-brand .name {
+    color: #fff;
+}
+
+.landing-hero {
+    background: linear-gradient(160deg, #0d2b21, #103a2c 45%, #0b1f18);
+    color: #fff;
+    padding-bottom: 64px;
+}
+
+.landing-hero-content {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 40px 24px 0;
+}
+
+.landing-hero h1 {
+    font-size: 40px;
+    line-height: 1.15;
+    margin: 0 0 16px;
+    font-weight: 800;
+}
+
+.landing-hero .landing-sub {
+    font-size: 16px;
+    color: #cfe6dc;
+    line-height: 1.6;
+    margin: 0 0 32px;
+}
+
+.landing-cta-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+.btn-hero-primary {
+    display: inline-block;
+    background: var(--color-primary);
+    color: #06231a;
+    font-weight: 700;
+    font-size: 14.5px;
+    padding: 12px 26px;
+    border-radius: 9px;
+    text-decoration: none;
+}
+
+.btn-hero-primary:hover {
+    background: var(--color-primary-dark);
+    color: #fff;
+}
+
+.btn-hero-secondary {
+    display: inline-block;
+    color: #cfe6dc;
+    font-weight: 600;
+    font-size: 14.5px;
+    padding: 12px 20px;
+    border-radius: 9px;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-hero-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.landing-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 64px 24px;
+}
+
+.landing-section-heading {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.landing-section-heading h2 {
+    font-size: 26px;
+    margin: 0 0 10px;
+}
+
+.landing-section-heading p {
+    color: var(--color-text-muted);
+    font-size: 14.5px;
+    margin: 0;
+}
+
+.landing-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.landing-step {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 26px 22px;
+}
+
+.landing-step .step-number {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: var(--color-primary-bg);
+    color: var(--color-primary-dark);
+    font-weight: 800;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.landing-step h3 {
+    font-size: 16px;
+    margin: 0 0 8px;
+}
+
+.landing-step p {
+    font-size: 13.5px;
+    color: var(--color-text-muted);
+    line-height: 1.55;
+    margin: 0;
+}
+
+.landing-step .step-role {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-primary-dark);
+    margin-bottom: 6px;
+}
+
+.landing-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.landing-feature {
+    padding: 4px 4px 4px 0;
+}
+
+.landing-feature .feature-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--color-primary-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.landing-feature h3 {
+    font-size: 14.5px;
+    margin: 0 0 6px;
+}
+
+.landing-feature p {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    line-height: 1.55;
+    margin: 0;
+}
+
+.landing-footer {
+    border-top: 1px solid var(--color-border);
+    padding: 24px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--color-text-muted);
+}
+
+@media (max-width: 800px) {
+    .landing-steps,
+    .landing-features {
+        grid-template-columns: 1fr;
+    }
+
+    .landing-hero h1 {
+        font-size: 30px;
+    }
+}
