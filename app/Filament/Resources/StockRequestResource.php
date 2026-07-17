@@ -49,6 +49,15 @@ class StockRequestResource extends Resource
         ];
     }
 
+    /**
+     * A tick-and-quantity catalog, grouped by category, rather than a
+     * one-product-at-a-time repeater — a Demander browsing what's
+     * orderable wants to scan the whole list and check off several things
+     * at once, not add rows one by one from a dropdown. Each product gets
+     * a checkbox (`products.{id}.selected`) and a quantity field
+     * (`products.{id}.qty`, only shown once ticked); CreateStockRequest
+     * turns whichever ones end up checked into real items via addItem().
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -57,39 +66,27 @@ class StockRequestResource extends Resource
                     ->label('Notes')
                     ->placeholder('Why are these items needed?')
                     ->columnSpanFull(),
-                Forms\Components\Repeater::make('items')
-                    ->label('Requested Items')
-                    ->schema([
-                        Forms\Components\Select::make('product_id')
-                            ->label('Product')
-                            ->options(fn () => static::orderableProductOptions())
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\TextInput::make('requested_qty')
-                            ->label('Quantity')
-                            ->numeric()
-                            ->minValue(1)
-                            ->required(),
-                    ])
-                    ->columns(2)
-                    ->minItems(1)
-                    ->required()
-                    ->addActionLabel('Add another item')
+                Forms\Components\Section::make('Products')
+                    ->description('Tick each product you need and enter a quantity.')
+                    ->schema(static::orderableProductsFormSchema())
                     ->columnSpanFull(),
             ]);
     }
 
     /**
-     * Options for the item picker — the full catalog for anyone with full
-     * product visibility, scoped to permitted products for a pure Demander
-     * (PLAN.md §3a). Mirrors ProductResource::getEloquentQuery()'s scoping
-     * logic; this is a UI convenience only, StockRequest::addItem() is the
-     * real backend enforcement.
+     * One collapsible Section per category, each containing a checkbox +
+     * quantity row per orderable product. Scoped to permitted products for
+     * a pure Demander (PLAN.md §3a) — mirrors
+     * ProductResource::getEloquentQuery()'s scoping logic; this is a UI
+     * convenience only, StockRequest::addItem() is the real backend
+     * enforcement.
+     *
+     * @return array<\Filament\Forms\Components\Component>
      */
-    protected static function orderableProductOptions(): array
+    protected static function orderableProductsFormSchema(): array
     {
         $user = Auth::user();
-        $query = Product::query();
+        $query = Product::query()->with('category')->orderBy('name');
 
         if ($user && ! $user->hasAnyRole(['Admin', 'Approver', 'Storekeeper', 'Supplier'])) {
             $permitted = $user->permittedItemGroupIds();
@@ -100,7 +97,40 @@ class StockRequestResource extends Resource
             });
         }
 
-        return $query->orderBy('name')->pluck('name', 'id')->all();
+        $byCategory = $query->get()->groupBy(fn (Product $product) => $product->category->name ?? 'Uncategorized');
+
+        if ($byCategory->isEmpty()) {
+            return [
+                Forms\Components\Placeholder::make('no_products')
+                    ->hiddenLabel()
+                    ->content('No products are currently orderable.'),
+            ];
+        }
+
+        return $byCategory->map(fn ($products, string $categoryName) => Forms\Components\Section::make($categoryName)
+            ->description($products->count().' product'.($products->count() === 1 ? '' : 's'))
+            ->collapsible()
+            ->schema(
+                $products->map(fn (Product $product) => Forms\Components\Grid::make(12)
+                    ->schema([
+                        Forms\Components\Checkbox::make("products.{$product->id}.selected")
+                            ->label($product->name)
+                            ->helperText("SKU: {$product->sku} · In stock: {$product->current_stock}")
+                            ->live()
+                            ->columnSpan(8),
+                        Forms\Components\TextInput::make("products.{$product->id}.qty")
+                            ->label('Quantity')
+                            ->numeric()
+                            ->minValue(1)
+                            ->default(1)
+                            ->visible(fn (Forms\Get $get) => (bool) $get("products.{$product->id}.selected"))
+                            ->required(fn (Forms\Get $get) => (bool) $get("products.{$product->id}.selected"))
+                            ->columnSpan(4),
+                    ]))
+                    ->toArray()
+            ))
+            ->values()
+            ->toArray();
     }
 
     public static function infolist(Infolist $infolist): Infolist

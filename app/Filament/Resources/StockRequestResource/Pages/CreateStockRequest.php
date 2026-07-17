@@ -17,26 +17,38 @@ class CreateStockRequest extends CreateRecord
     protected static string $resource = StockRequestResource::class;
 
     /**
-     * The form's "items" repeater isn't a real column on stock_requests —
-     * each row is added through StockRequest::addItem(), which is where
-     * the ordering-permission rule (PLAN.md §3a) is actually enforced.
-     * Never create StockRequestItem rows directly here.
+     * The form's "products" checklist isn't a real column on
+     * stock_requests — each ticked-and-quantified product is added
+     * through StockRequest::addItem(), which is where the
+     * ordering-permission rule (PLAN.md §3a) is actually enforced. Never
+     * create StockRequestItem rows directly here.
      */
     protected function handleRecordCreation(array $data): Model
     {
-        $items = $data['items'] ?? [];
+        $selected = collect($data['products'] ?? [])
+            ->filter(fn (array $row) => (bool) ($row['selected'] ?? false));
+
+        if ($selected->isEmpty()) {
+            Notification::make()
+                ->title('Could not submit request')
+                ->body('Tick at least one product and enter a quantity.')
+                ->danger()
+                ->send();
+
+            $this->halt();
+        }
 
         try {
-            return DB::transaction(function () use ($data, $items) {
+            return DB::transaction(function () use ($data, $selected) {
                 $stockRequest = StockRequest::create([
                     'requester_id' => Auth::id(),
                     'notes' => $data['notes'] ?? null,
                 ]);
 
-                foreach ($items as $item) {
+                foreach ($selected as $productId => $row) {
                     $stockRequest->addItem(
-                        Product::findOrFail($item['product_id']),
-                        (int) $item['requested_qty'],
+                        Product::findOrFail($productId),
+                        (int) ($row['qty'] ?? 0),
                     );
                 }
 

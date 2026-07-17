@@ -6,6 +6,20 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
+## 2026-07-17 — Session 1 (continued): Category-wise tick-and-quantity request form
+
+**Why:** user asked for the New Stock Request form to show a category-grouped product catalog where a Demander just ticks a checkbox and types a quantity, instead of the old one-product-at-a-time Repeater (Select dropdown + qty, "Add another item" button).
+
+**What changed:** `StockRequestResource::form()` now renders one collapsible `Section` per category, each containing a `Grid` row per product — a `Checkbox` (product name as label, helper text showing SKU + current stock) plus a `TextInput` for quantity that only appears once ticked (`->visible()`/`->required()` both driven by `Forms\Get` reading the checkbox's own live state). Field names use `products.{id}.selected` / `products.{id}.qty` instead of the old `items.{index}.product_id` / `items.{index}.requested_qty`. The catalog itself is still scoped by the exact same permission query as before (`orderableProductsFormSchema()` — renamed/expanded from `orderableProductOptions()`), so a Demander never even sees a checkbox for a product their group isn't permitted to order — stricter than the old Select, which merely didn't offer it as a dropdown option while the repeater row itself still existed as a field.
+
+**`CreateStockRequest::handleRecordCreation()`** rewritten to read `$data['products']`, filter to rows where `selected` is true, and call `addItem()` per selected product — same `InventoryRuleException` → halt-with-notification pattern as before, plus a new upfront check: if nothing was ticked at all, show "Tick at least one product and enter a quantity" rather than silently creating an empty request.
+
+**Tests:** updated the two existing `StockRequestWorkflowUiTest` create-form tests for the new `fillForm(['products' => [$id => ['selected' => true, 'qty' => 5]]])` shape. Noted in a comment: because the restricted-product test's product is now excluded from the schema entirely (not just hidden from a dropdown), that test no longer distinguishes "form correctly excludes it" from "server would reject it anyway" — both are true and covered (the latter already has dedicated coverage in `ItemGroupOrderingPermissionTest::test_stock_request_add_item_rejects_a_product_the_requester_cannot_order`), so this was accepted as fine rather than engineering a way to force the distinction.
+
+**Verified in-browser:** logged in as Sarah Kim, saw products grouped under Stationery/Hygiene/PPE section headers with live stock counts, ticked two products in the same category, watched quantity fields appear immediately, filled them, submitted — request created with both items at status Pending, zero console errors. Full suite: 103 tests, 96 passed, 7 pre-existing skips, 0 failures.
+
+---
+
 ## 2026-07-17 — Session 1 (continued): "Mark as Received" was missing from the View page
 
 **Why:** immediately after the previous entry's "Received" status work, user reported "I can not see any received action button on demander side." The action was real and working — I'd only added it to `StockRequestResource::table()`'s row actions, which render on the **List** page (`/admin/stock-requests`). Confirmed via a fresh Playwright check (created a brand-new request via tinker, approved + issued it, then loaded both pages as the requester): the button appeared on the List page but `ViewStockRequest` — the page a demander actually lands on after clicking "View" from the list or the dashboard's "My Requests" table — had zero header actions at all. That's almost certainly where the user was looking.

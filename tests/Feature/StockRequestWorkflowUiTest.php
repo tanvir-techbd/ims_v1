@@ -97,8 +97,8 @@ class StockRequestWorkflowUiTest extends TestCase
             ->test(CreateStockRequest::class)
             ->fillForm([
                 'notes' => 'Need these for the front desk.',
-                'items' => [
-                    ['product_id' => $product->id, 'requested_qty' => 5],
+                'products' => [
+                    $product->id => ['selected' => true, 'qty' => 5],
                 ],
             ])
             ->call('create')
@@ -119,11 +119,15 @@ class StockRequestWorkflowUiTest extends TestCase
         $product->itemGroups()->attach($itemGroup);
 
         // No UserGroup granted for $itemGroup, so $demander has no permitted path to it.
+        // The product is deliberately excluded from the permitted-only catalog the
+        // form builds its schema from, so it's submitted as a raw field the form
+        // never rendered — proving the server-side check in addItem() is what
+        // actually blocks it, not just the form hiding the option.
         Livewire::actingAs($demander)
             ->test(CreateStockRequest::class)
             ->fillForm([
-                'items' => [
-                    ['product_id' => $product->id, 'requested_qty' => 5],
+                'products' => [
+                    $product->id => ['selected' => true, 'qty' => 5],
                 ],
             ])
             ->call('create');

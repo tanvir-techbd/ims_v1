@@ -36,8 +36,8 @@ The seeder already leaves one request sitting in **Pending**, ready to approve �
 ### Step 1 — Order (as a Demander)
 
 1. Sign in as `sarah.kim@example.com` / `password`.
-2. In the sidebar, go to **Stock Requests → New Request** (or click **+ New Request** on the dashboard).
-3. Add one or more products and a quantity for each, optionally add a note, then submit.
+2. In the sidebar, go to **Stock Requests → New stock request** (or click **+ New Request** on the dashboard).
+3. Products are listed catalog-style, grouped by category (only categories/products your group is actually permitted to order show up at all). Tick the checkbox on each product you need — a quantity field appears next to it as soon as you do. Tick as many as you like, fill in each quantity, optionally add a note, then click **Create**.
 4. Your dashboard now shows the request under **My Requests** with status **Pending**.
 5. Sign out (avatar menu, top right → Sign out).
 
