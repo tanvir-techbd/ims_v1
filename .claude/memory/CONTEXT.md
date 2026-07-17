@@ -6,6 +6,20 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
+## 2026-07-17 — Session 1 (continued): Fixed the actual sidebar text-color bug
+
+**Why:** user said the sidebar text wasn't bright enough. Earlier in this session I'd computed WCAG contrast for `--im-sidebar-text` (#cfe6dc on #10241d ≈ 11.5:1) and concluded there was no real problem — that math was correct but answered the wrong question, because that color was never actually reaching the screen.
+
+**Root cause:** Filament's `sidebar/item.blade.php` renders the label as a child `<span class="fi-sidebar-item-label ... text-gray-700 dark:text-gray-200">` and the icon as `<svg class="fi-sidebar-item-icon text-gray-400 dark:text-gray-500">` — both carry their own explicit Tailwind color classes directly on the element. `theme.css` only had `.fi-sidebar-item-button { color: var(--im-sidebar-text) }`, which sets the color of the parent `<a>`; a child with its own explicit color declaration never inherits from an ancestor no matter what that ancestor's color is, so the rule was a no-op for visible text. In Filament's default light mode (the state the sidebar is always forced dark-green in, regardless of the light/dark toggle), that meant every inactive sidebar item was actually rendering Tailwind's `text-gray-700` — a dark gray — straight over a near-black green background. Group labels happened to escape this because `.fi-sidebar-group-label` and its Tailwind classes sit on the *same* element (a same-specificity source-order tie that my later-in-cascade rule happened to win), which is why they looked fine while item labels didn't.
+
+**Fix:** added explicit rules for `.fi-sidebar-item-button .fi-sidebar-item-label` and `.fi-sidebar-item-button .fi-sidebar-item-icon` (plus `:hover`/`.fi-sidebar-item-active` variants) in `theme.css`, and brightened the color values while at it — `--im-sidebar-text` #cfe6dc → `#eafbf3`, new `--im-sidebar-group-label` token `#a8d9c5` (was an inline `#7fa593`). Icon opacity bumped from 0.85 to 1.
+
+**Lesson for future CSS work against Filament/Tailwind components:** before assuming a "just add a color rule on the wrapper" fix worked, check the actual rendered DOM for child elements carrying their own explicit utility classes — computed contrast math on the *intended* color is meaningless if that color was never applied. Verified this time by reading `getComputedStyle(...).color` in the browser, not just eyeballing a screenshot.
+
+**Verified:** `php artisan test` 95/88/7-skipped/0-failures (CSS-only change, no test changes needed). Playwright: confirmed every inactive sidebar label now computes to `rgb(234, 251, 243)` (screenshot also shows a clear before/after improvement — all 12+ nav items now read as bright mint-white against the dark green, not muted gray).
+
+---
+
 ## 2026-07-17 — Session 1 (continued): HOW_TO_USE.md + marketing landing page
 
 **Why:** user asked "form which ID i can order? then approve? then issue?" (wanted a concrete usage walkthrough with real demo credentials) plus "make a landing page nicely, direct login is not good to see" — `/` previously just redirected straight to `/admin/login` with zero context.

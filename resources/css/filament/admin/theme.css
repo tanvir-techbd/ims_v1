@@ -15,10 +15,11 @@
 
 :root {
     --im-sidebar-bg: #10241d;
-    --im-sidebar-text: #cfe6dc;
+    --im-sidebar-text: #eafbf3;
     --im-sidebar-text-active: #ffffff;
     --im-sidebar-active-bg: #1a3b2f;
     --im-sidebar-border: #1a3b2f;
+    --im-sidebar-group-label: #a8d9c5;
 }
 
 .fi-sidebar {
@@ -36,7 +37,7 @@
 }
 
 .fi-sidebar-group-label {
-    color: #7fa593;
+    color: var(--im-sidebar-group-label);
 }
 
 .fi-sidebar-item-button {
@@ -54,9 +55,41 @@
     font-weight: 600;
 }
 
-.fi-sidebar-item-icon {
-    color: currentColor;
-    opacity: 0.85;
+/*
+ * The label text and icon aren't actually painted by the two rules above —
+ * Filament renders them as a child <span class="fi-sidebar-item-label"> and
+ * <svg class="fi-sidebar-item-icon">, each carrying its own explicit
+ * text-gray-700/dark:text-gray-200 (label) and text-gray-400/dark:text-gray-500
+ * (icon) utility classes straight from Filament's own component. An
+ * element's own declared color always wins over an inherited one, so
+ * `.fi-sidebar-item-button { color }` alone never reached the visible
+ * text — it was silently rendering Tailwind's default gray (dark gray in
+ * light mode) against the dark green background the whole time. These
+ * need their own explicit rules, not just a color on the ancestor.
+ */
+.fi-sidebar-item-button .fi-sidebar-item-label {
+    color: var(--im-sidebar-text);
+}
+
+.fi-sidebar-item-button:hover .fi-sidebar-item-label {
+    color: var(--im-sidebar-text-active);
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-label {
+    color: #34d399;
+}
+
+.fi-sidebar-item-button .fi-sidebar-item-icon {
+    color: var(--im-sidebar-text);
+    opacity: 1;
+}
+
+.fi-sidebar-item-button:hover .fi-sidebar-item-icon {
+    color: var(--im-sidebar-text-active);
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-icon {
+    color: #34d399;
 }
 
 .fi-sidebar-nav {
