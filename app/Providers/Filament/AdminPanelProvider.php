@@ -22,6 +22,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -49,6 +50,14 @@ class AdminPanelProvider extends PanelProvider
                 'purple' => Color::Purple,
             ])
             ->viteTheme('resources/css/filament/admin/theme.css')
+            // Filament's light/dark/system switcher only ships inside the
+            // user-menu dropdown by default — easy to miss. Surfacing it
+            // directly in the topbar (next to global search) makes day/night
+            // mode an obviously-present feature rather than a hidden one.
+            ->renderHook(
+                PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+                fn (): string => view('filament.theme-switcher-topbar')->render(),
+            )
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])
