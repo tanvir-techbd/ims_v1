@@ -160,6 +160,20 @@ class StockRequestResource extends Resource
             ->emptyStateIcon('heroicon-o-clipboard-document-list')
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\Action::make('markReceived')
+                    ->label('Mark as Received')
+                    ->icon('heroicon-o-check-badge')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalDescription('Confirms you physically received the issued item(s). This cannot be undone.')
+                    ->visible(fn (StockRequest $record) => in_array($record->status, [
+                        RequestStatus::Issued, RequestStatus::PartiallyIssued,
+                    ], true) && ($record->requester_id === Auth::id() || (Auth::user()?->hasRole('Admin') ?? false)))
+                    ->action(function (StockRequest $record): void {
+                        $record->markReceived(Auth::user());
+
+                        Notification::make()->title('Marked as received')->success()->send();
+                    }),
                 Tables\Actions\Action::make('cancel')
                     ->label('Cancel')
                     ->icon('heroicon-o-x-circle')

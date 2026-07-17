@@ -10,6 +10,7 @@ enum RequestStatus: string
     case Rejected = 'rejected';
     case PartiallyIssued = 'partially_issued';
     case Issued = 'issued';
+    case Received = 'received';
     case Cancelled = 'cancelled';
 
     public function label(): string
@@ -21,6 +22,7 @@ enum RequestStatus: string
             self::Rejected => 'Rejected',
             self::PartiallyIssued => 'Partially Issued',
             self::Issued => 'Issued',
+            self::Received => 'Received',
             self::Cancelled => 'Cancelled',
         };
     }
@@ -32,6 +34,7 @@ enum RequestStatus: string
             self::PartiallyApproved, self::PartiallyIssued => 'purple',
             self::Approved => 'info',
             self::Issued => 'success',
+            self::Received => 'teal',
             self::Rejected => 'danger',
             self::Cancelled => 'gray',
         };

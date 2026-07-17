@@ -1,6 +1,6 @@
 # How to Use This App
 
-A walkthrough of the core workflow — Demander requests → Approver approves → Storekeeper issues — using the seeded demo accounts. See `CLAUDE.md`/`PLAN.md` for architecture; this file is just "how do I click through a full example."
+A walkthrough of the core workflow — Demander requests → Approver approves → Storekeeper issues → Demander confirms receipt — using the seeded demo accounts. See `CLAUDE.md`/`PLAN.md` for architecture; this file is just "how do I click through a full example."
 
 ## 1. Seed the demo data (once)
 
@@ -29,7 +29,7 @@ Every demo account's password is **`password`**.
 
 A product with no item-group at all (e.g. Hand Sanitizer, Stapler) is orderable by every Demander regardless of group. A product tagged with an item-group (e.g. Safety Gloves → "Facilities Orderable") can only be ordered by a Demander whose user-group has been granted that item-group.
 
-## 3. The core workflow: Order → Approve → Issue
+## 3. The core workflow: Order → Approve → Issue → Receive
 
 The seeder already leaves one request sitting in **Pending**, ready to approve — Sarah Kim asked for Whiteboard Markers (15) and Hand Sanitizer (12). Fastest way to see the whole flow end to end is to pick that request up at step 2 below, or start completely fresh with step 1.
 
@@ -57,7 +57,13 @@ The seeder already leaves one request sitting in **Pending**, ready to approve �
 4. Stock is deducted immediately and recorded in the append-only stock ledger; the item's status becomes **Issued** or **Partially Issued**.
 5. Sign out.
 
-### Step 4 — See the full trail
+### Step 4 — Confirm receipt (as the Demander)
+
+1. Sign in as `sarah.kim@example.com` / `password` again (the original requester).
+2. Go to **Stock Requests** — the request now shows status **Issued** or **Partially Issued**.
+3. Click **Mark as Received** on that row and confirm. This is the requester's own acknowledgement that they physically got the item(s) — only they (or Admin) can do it, and only once something has actually been issued. Status becomes **Received**, the final state in the trail.
+
+### Step 5 — See the full trail
 
 Sign in as any role that can view the request (Admin, Approver, or Storekeeper, or the original Demander) and open it from **Stock Requests**. On the **Requested Items** table, click **View Trail** on any item to see its complete history: who approved how much and why, who issued how much and when.
 

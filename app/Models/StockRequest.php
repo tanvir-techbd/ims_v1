@@ -82,12 +82,37 @@ class StockRequest extends Model
     }
 
     /**
+     * The requester's own confirmation that they physically received what
+     * was issued — the last step of the trail (Order → Approve → Issue →
+     * Received). Only the original requester (or Admin) can confirm it,
+     * and only once at least one item has actually been issued.
+     */
+    public function markReceived(User $user): void
+    {
+        if ($user->id !== $this->requester_id && ! $user->hasRole('Admin')) {
+            throw new InventoryRuleException('Only the original requester can confirm receipt of this request.');
+        }
+
+        if (! in_array($this->status, [RequestStatus::Issued, RequestStatus::PartiallyIssued], true)) {
+            throw new InventoryRuleException('Only a request with issued items can be marked as received.');
+        }
+
+        $this->update(['status' => RequestStatus::Received]);
+    }
+
+    /**
      * Derives the request's overall status from its items' individual
      * statuses. Called after any item is approved, rejected, or issued —
-     * never set the parent status directly elsewhere.
+     * never set the parent status directly elsewhere. Once the requester
+     * has confirmed receipt, later item-level changes shouldn't silently
+     * revert that back to Issued/PartiallyIssued.
      */
     public function recomputeStatus(): void
     {
+        if ($this->status === RequestStatus::Received) {
+            return;
+        }
+
         $statuses = $this->items()->pluck('status');
 
         if ($statuses->isEmpty() || $statuses->every(fn (RequestItemStatus $s) => $s === RequestItemStatus::Pending)) {

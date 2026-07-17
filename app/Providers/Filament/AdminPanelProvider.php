@@ -13,6 +13,7 @@ use App\Filament\Widgets\StorekeeperAwaitingIssuanceWidget;
 use App\Filament\Widgets\StorekeeperStatsWidget;
 use App\Filament\Widgets\SupplierStatsWidget;
 use App\Filament\Widgets\SupplierStockLevelsWidget;
+use App\Filament\Widgets\WelcomeWidget;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -23,7 +24,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -43,11 +43,13 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Emerald,
                 // RequestStatus/RequestItemStatus use 'purple' for the
-                // partial states (PartiallyApproved/PartiallyIssued) —
-                // not one of Filament's built-in semantic colors
-                // (primary/success/warning/danger/info/gray), so it must
-                // be registered here or badges silently render unstyled.
+                // partial states (PartiallyApproved/PartiallyIssued) and
+                // 'teal' for Received — neither is one of Filament's
+                // built-in semantic colors (primary/success/warning/danger/
+                // info/gray), so both must be registered here or the badge
+                // silently renders unstyled.
                 'purple' => Color::Purple,
+                'teal' => Color::Teal,
             ])
             ->viteTheme('resources/css/filament/admin/theme.css')
             // Filament's light/dark/system switcher only ships inside the
@@ -72,7 +74,12 @@ class AdminPanelProvider extends PanelProvider
             // (meant only for the Reports page, reacting to its period filter)
             // onto the Dashboard too, unfiltered. List Dashboard widgets explicitly.
             ->widgets([
-                Widgets\AccountWidget::class,
+                // Filament's own AccountWidget ("Welcome / Sign out" card)
+                // and FilamentInfoWidget (version/docs/GitHub links) are
+                // generic framework boilerplate, not useful to an inventory
+                // system's users — replaced with one simple role-aware
+                // greeting instead.
+                WelcomeWidget::class,
                 AdminStatsWidget::class,
                 ApproverStatsWidget::class,
                 DemanderStatsWidget::class,
@@ -84,7 +91,6 @@ class AdminPanelProvider extends PanelProvider
                 StorekeeperAwaitingIssuanceWidget::class,
                 SupplierStockLevelsWidget::class,
                 LowStockWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

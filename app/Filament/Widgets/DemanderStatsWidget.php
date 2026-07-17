@@ -26,7 +26,7 @@ class DemanderStatsWidget extends BaseWidget
             ->count();
 
         $issuedThisMonth = StockRequest::where('requester_id', $userId)
-            ->whereIn('status', [RequestStatus::Issued, RequestStatus::PartiallyIssued])
+            ->whereIn('status', [RequestStatus::Issued, RequestStatus::PartiallyIssued, RequestStatus::Received])
             ->where('updated_at', '>=', now()->startOfMonth())
             ->count();
 

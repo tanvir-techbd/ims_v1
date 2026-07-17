@@ -6,6 +6,22 @@ Running log of decisions and status across sessions. Newest entry on top. See `P
 
 ---
 
+## 2026-07-17 — Session 1 (continued): "Received" status + dashboard cleanup
+
+**Why:** user asked for a 4th workflow step — after a Storekeeper issues stock, the Demander should be able to confirm they physically received it — plus wanted Filament's default Dashboard widgets (the "Welcome / Sign out" AccountWidget and the "filament v3.3.54 / Documentation / GitHub" FilamentInfoWidget) replaced with something simple and app-relevant.
+
+**New `Received` status:** added to `RequestStatus` (after `Issued`, before `Cancelled`), color `'teal'` (registered in `AdminPanelProvider`'s `->colors()`, same reason `'purple'` had to be — not a Filament built-in). `StockRequest::markReceived(User $user)` (new, mirrors the guard style of `cancel()`/`approve()`/`issue()`): only the original requester or Admin may call it, and only when status is `Issued` or `PartiallyIssued`. `recomputeStatus()` — called after every item-level approve/reject/issue — now early-returns when status is already `Received`, so a later item action on the same request can't silently revert a confirmed receipt back to `Issued`/`PartiallyIssued`. Documented trade-off: if a Storekeeper issues *more* stock after receipt was already confirmed (e.g. topping up a partial issuance), the status just stays `Received` rather than reverting — acceptable for this feature's scope, not solved further.
+
+**UI:** new "Mark as Received" table action on `StockRequestResource` (visible only to the requester/Admin, only on Issued/PartiallyIssued rows, `requiresConfirmation()` — same pattern as the existing "cancel" action right below it). `DemanderStatsWidget`'s "Issued This Month" stat updated to include `Received` in its status filter (previously would have dropped a request from that count the moment it left Issued/PartiallyIssued, undercounting).
+
+**Dashboard cleanup:** new `WelcomeWidget` (`app/Filament/Widgets/WelcomeWidget.php` + `resources/views/filament/widgets/welcome-widget.blade.php`) — a single simple card, "{Good morning/afternoon/evening}, {name}" + "Here's your {role} snapshot for {date}", built with Filament's own `<x-filament::section>` component (no custom CSS). Replaces `Widgets\AccountWidget::class` and `Widgets\FilamentInfoWidget::class` in `AdminPanelProvider`'s widget list — both pure framework boilerplate with nothing to do with this app.
+
+**Tests:** 7 new tests — 5 in `InventoryWorkflowTest` (happy path for full and partial issuance, requester-or-Admin-only guard, can't-mark-received-before-issuance guard, `recomputeStatus()` doesn't revert `Received`) and 2 in `StockRequestWorkflowUiTest` (the Livewire table action itself, and that it's hidden on a Pending request). Full suite: 102 tests, 95 passed, 7 pre-existing skips, 0 failures.
+
+**Verified in-browser:** David Lee's pre-seeded `PartiallyIssued` request (from `DemoDataSeeder`) → clicked **Mark as Received** → confirmation modal showed the exact copy written in the action → status badge flipped to teal **Received** → the action itself correctly disappeared from that row afterward (nothing left to confirm) → Demander dashboard's "Issued This Month" stat still counted it. Admin dashboard screenshot confirmed the old boilerplate cards are gone, replaced by the single WelcomeWidget banner.
+
+---
+
 ## 2026-07-17 — Session 1 (continued): Fixed the actual sidebar text-color bug
 
 **Why:** user said the sidebar text wasn't bright enough. Earlier in this session I'd computed WCAG contrast for `--im-sidebar-text` (#cfe6dc on #10241d ≈ 11.5:1) and concluded there was no real problem — that math was correct but answered the wrong question, because that color was never actually reaching the screen.

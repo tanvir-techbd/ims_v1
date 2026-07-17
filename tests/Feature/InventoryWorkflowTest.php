@@ -167,6 +167,89 @@ class InventoryWorkflowTest extends TestCase
         $item->issue(2, $storekeeper);
     }
 
+    public function test_requester_can_mark_a_fully_issued_request_as_received(): void
+    {
+        $product = $this->makeProduct(stock: 20);
+        $item = $this->makeItem($product, requestedQty: 10);
+        $approver = User::factory()->create();
+        $storekeeper = User::factory()->create();
+
+        $item->approve(10, $approver);
+        $item->issue(10, $storekeeper);
+
+        $request = $item->stockRequest->fresh();
+        $request->markReceived($request->requester);
+
+        $this->assertSame(RequestStatus::Received, $request->fresh()->status);
+    }
+
+    public function test_requester_can_mark_a_partially_issued_request_as_received(): void
+    {
+        $product = $this->makeProduct(stock: 3);
+        $item = $this->makeItem($product, requestedQty: 10);
+        $approver = User::factory()->create();
+        $storekeeper = User::factory()->create();
+
+        $item->approve(10, $approver);
+        $item->issue(10, $storekeeper);
+
+        $request = $item->stockRequest->fresh();
+        $this->assertSame(RequestStatus::PartiallyIssued, $request->status);
+
+        $request->markReceived($request->requester);
+
+        $this->assertSame(RequestStatus::Received, $request->fresh()->status);
+    }
+
+    public function test_only_the_requester_or_admin_can_mark_a_request_as_received(): void
+    {
+        $product = $this->makeProduct(stock: 20);
+        $item = $this->makeItem($product, requestedQty: 10);
+        $approver = User::factory()->create();
+        $storekeeper = User::factory()->create();
+
+        $item->approve(10, $approver);
+        $item->issue(10, $storekeeper);
+
+        $someoneElse = User::factory()->create();
+
+        $this->expectException(InventoryRuleException::class);
+
+        $item->stockRequest->fresh()->markReceived($someoneElse);
+    }
+
+    public function test_cannot_mark_a_request_as_received_before_anything_is_issued(): void
+    {
+        $item = $this->makeItem($this->makeProduct(), requestedQty: 10);
+        $approver = User::factory()->create();
+
+        $item->approve(10, $approver);
+
+        $request = $item->stockRequest->fresh();
+
+        $this->expectException(InventoryRuleException::class);
+
+        $request->markReceived($request->requester);
+    }
+
+    public function test_recomputing_status_does_not_revert_a_received_request(): void
+    {
+        $product = $this->makeProduct(stock: 20);
+        $item = $this->makeItem($product, requestedQty: 10);
+        $approver = User::factory()->create();
+        $storekeeper = User::factory()->create();
+
+        $item->approve(10, $approver);
+        $item->issue(10, $storekeeper);
+
+        $request = $item->stockRequest->fresh();
+        $request->markReceived($request->requester);
+
+        $request->recomputeStatus();
+
+        $this->assertSame(RequestStatus::Received, $request->fresh()->status);
+    }
+
     public function test_recording_stock_in_increases_current_stock_and_logs_movement(): void
     {
         $product = $this->makeProduct(stock: 10);
